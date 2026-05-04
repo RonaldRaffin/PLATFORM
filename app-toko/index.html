@@ -1,129 +1,670 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <title>Aplikasi Toko</title>
+  <meta charset="UTF-8">
+  <title>Aplikasi Toko</title>
+  <link rel="manifest" href="./manifest.json">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500&display=swap"
+    rel="stylesheet"
+  >
 
-    <!-- PWA -->
-    <link rel="manifest" href="./manifest.json">
-    <meta name="theme-color" content="#8b5cf6">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    /* ============================== */
+    /* RESET                          */
+    /* ============================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+    /* ============================== */
+    /* VARIABLES                      */
+    /* ============================== */
+    :root {
+      --bg:           #09090f;
+      --surface:      #10101a;
+      --surface2:     #16161f;
+      --border:       rgba(255, 255, 255, 0.06);
+      --border-hover: rgba(255, 255, 255, 0.12);
+      --accent:       #6c63ff;
+      --accent2:      #a78bfa;
+      --accent-glow:  rgba(108, 99, 255, 0.15);
+      --text:         #eeeeff;
+      --text-muted:   #6b6a80;
+      --text-dim:     #2e2d3d;
+      --green:        #34d399;
+      --green-bg:     rgba(52, 211, 153, 0.1);
+    }
 
-    <style>
-        body {
-            font-family: 'Montserrat', sans-serif;
-            background: linear-gradient(135deg, #1a1207 0%, #2d2010 40%, #1a1207 100%);
-            min-height: 100vh;
-        }
+    /* ============================== */
+    /* BASE                           */
+    /* ============================== */
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+    }
 
-        h1 {
-            font-family: 'Cormorant Garamond', serif !important;
-            font-weight: 300 !important;
-            letter-spacing: 0.18em !important;
-            text-transform: uppercase !important;
-            color: #D4A843 !important;
-            font-size: 2rem !important;
-            margin-bottom: 0.25rem !important;
-        }
+    .layout {
+      display: flex;
+      min-height: 100vh;
+    }
 
-        h1::after {
-            content: '';
-            display: block;
-            width: 60px;
-            height: 1px;
-            background: #B8972A;
-            margin-top: 10px;
-        }
+    /* ============================== */
+    /* SIDEBAR                        */
+    /* ============================== */
+    .sidebar {
+      width: 230px;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 28px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 36px;
+      flex-shrink: 0;
+    }
 
-        .p-8 {
-            background: transparent !important;
-        }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 6px;
+    }
 
-        .w-full.bg-white.shadow-md.rounded {
-            background: rgba(255,255,255,0.04) !important;
-            border: 0.5px solid rgba(255, 0, 0, 0.3) !important;
-            border-radius: 12px !important;
-            overflow: hidden !important;
-            box-shadow: 0 8px 48px rgba(0,0,0,0.4) !important;
-            backdrop-filter: blur(10px);
-        }
+    @keyframes float {
+      0%   { transform: translateY(0px);  box-shadow: 0 0 24px rgba(108, 99, 255, 0.4); }
+      50%  { transform: translateY(-7px); box-shadow: 0 8px 32px rgba(108, 99, 255, 0.7); }
+      100% { transform: translateY(0px);  box-shadow: 0 0 24px rgba(108, 99, 255, 0.4); }
+    }
 
-        thead.bg-green-500 {
-            background: linear-gradient(135deg, #0d0a04 0%, #2d2010 50%, #0d0a04 100%) !important;
-        }
+    .brand-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--accent);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: float 3s ease-in-out infinite;
+    }
 
-        thead th {
-            font-family: 'Montserrat', sans-serif !important;
-            font-size: 9px !important;
-            letter-spacing: 0.3em !important;
-            text-transform: uppercase !important;
-            font-weight: 400 !important;
-            color: #D4A843 !important;
-            padding: 1.1rem 1.5rem !important;
-            border-bottom: 1px solid rgba(184,151,42,0.4) !important;
-        }
+    .brand-icon svg {
+      width: 18px;
+      height: 18px;
+    }
 
-        #tabel-barang tr {
-            border-bottom: 0.5px solid rgba(184,151,42,0.1) !important;
-            transition: background 0.25s, transform 0.15s;
-        }
+    .brand-name {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 17px;
+      letter-spacing: -0.5px;
+    }
 
-        #tabel-barang tr:hover {
-            background: rgba(184,151,42,0.08) !important;
-            transform: translateX(2px);
-        }
+    .nav-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-dim);
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      padding: 0 12px;
+      margin-bottom: 6px;
+    }
 
-        #tabel-barang tr:last-child {
-            border-bottom: none !important;
-        }
+    .nav {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
 
-        #tabel-barang td:nth-child(1) {
-            font-size: 10px;
-            letter-spacing: 0.15em;
-            color: rgba(0, 0, 0, 0.7);
-            font-variant-numeric: tabular-nums;
-            padding: 1rem 1.5rem !important;
-        }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border-radius: 10px;
+      font-size: 13.5px;
+      font-weight: 400;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s;
+      text-decoration: none;
+    }
 
-        #tabel-barang td:nth-child(2) {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 17px;
-            font-weight: 400;
-            letter-spacing: 0.05em;
-            color: #c18e18;
-            padding: 1rem 1.5rem !important;
-        }
+    .nav-item:hover { background: var(--surface2); color: var(--text); }
+    .nav-item.active { background: var(--accent-glow); color: var(--accent2); font-weight: 500; }
 
-        #tabel-barang td:nth-child(3) {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 17px;
-            font-weight: 600;
-            color: #D4A843;
-            letter-spacing: 0.05em;
-            padding: 1rem 1.5rem !important;
-        }
-    </style>
+    .nav-item svg {
+      width: 15px;
+      height: 15px;
+      flex-shrink: 0;
+    }
+
+    /* ============================== */
+    /* MAIN                           */
+    /* ============================== */
+    .main {
+      flex: 1;
+      padding: 40px 44px;
+      overflow: auto;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 32px;
+    }
+
+    .page-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.8px;
+      line-height: 1;
+    }
+
+    .page-title span { color: var(--accent2); }
+
+    .page-sub {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 5px;
+    }
+
+    /* ============================== */
+    /* STATS                          */
+    /* ============================== */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px 22px;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .stat-card:hover {
+      border-color: var(--border-hover);
+      transform: translateY(-2px);
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 500;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .stat-value {
+      font-family: 'Syne', sans-serif;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1;
+    }
+
+    .stat-badge {
+      display: inline-block;
+      margin-top: 8px;
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 20px;
+      background: var(--green-bg);
+      color: var(--green);
+      font-weight: 500;
+    }
+
+    /* ============================== */
+    /* CARD                           */
+    /* ============================== */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    .card-header {
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .card-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: -0.2px;
+    }
+
+    /* ============================== */
+    /* BUTTONS                        */
+    /* ============================== */
+    .btn {
+      padding: 9px 18px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 500;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-accent {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 0 20px rgba(108, 99, 255, 0.3);
+    }
+
+    .btn-accent:hover {
+      background: #5b54e0;
+      transform: translateY(-1px);
+      box-shadow: 0 0 28px rgba(108, 99, 255, 0.45);
+    }
+
+    .btn-accent:active { transform: scale(0.97); }
+
+    .btn-ghost {
+      background: var(--surface2);
+      color: var(--text-muted);
+      border: 1px solid var(--border-hover);
+    }
+
+    .btn-ghost:hover {
+      color: var(--text);
+      border-color: var(--border-hover);
+    }
+
+    /* ============================== */
+    /* FORM PANEL                     */
+    /* ============================== */
+    .form-panel {
+      display: none;
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface2);
+      gap: 14px;
+      flex-wrap: wrap;
+      align-items: flex-end;
+    }
+
+    .form-panel.open { display: flex; }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      flex: 1;
+      min-width: 180px;
+    }
+
+    .field label {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .field input {
+      background: var(--bg);
+      border: 1px solid var(--border-hover);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 13.5px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .field input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    .field input::placeholder { color: var(--text-dim); }
+
+    /* ============================== */
+    /* TABLE                          */
+    /* ============================== */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead tr { background: var(--surface2); }
+
+    th {
+      padding: 11px 24px;
+      text-align: left;
+      font-size: 10.5px;
+      font-weight: 500;
+      color: var(--text-muted);
+      letter-spacing: 0.9px;
+      text-transform: uppercase;
+    }
+
+    td {
+      padding: 14px 24px;
+      font-size: 13.5px;
+      color: var(--text);
+      border-top: 1px solid var(--border);
+    }
+
+    tbody tr { transition: background 0.1s; }
+    tbody tr:hover { background: var(--surface2); }
+
+    .badge-id {
+      display: inline-block;
+      background: var(--accent-glow);
+      color: var(--accent2);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: 6px;
+      font-family: 'Syne', sans-serif;
+      letter-spacing: 0.3px;
+    }
+
+    .harga-val {
+      font-family: 'Syne', sans-serif;
+      font-weight: 600;
+      color: var(--green);
+    }
+
+    .empty-state {
+      padding: 64px 24px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 13.5px;
+    }
+
+    .empty-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--surface2);
+      border: 1px solid var(--border-hover);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 14px;
+      font-size: 22px;
+    }
+
+    /* ============================== */
+    /* TOAST                          */
+    /* ============================== */
+    .toast {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      background: var(--surface);
+      border: 1px solid var(--green);
+      border-radius: 12px;
+      padding: 13px 20px;
+      font-size: 13px;
+      color: var(--green);
+      transform: translateY(16px);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      pointer-events: none;
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  </style>
 </head>
-<body class="p-8 bg-gray-100">
 
-    <h1 class="text-2xl font-bold mb-4">Daftar Barang</h1>
+<body>
+  <div class="layout">
 
-    <table class="w-full bg-white shadow-md rounded">
-        <thead class="bg-green-500 text-white">
+    <!-- ============================== -->
+    <!-- SIDEBAR                        -->
+    <!-- ============================== -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg viewBox="0 0 20 20" fill="white">
+            <path d="M2 4a2 2 0 012-2h12a2 2 0 012 2v1H2V4zm0 3h16v9a2 2 0 01-2 2H4a2 2 0 01-2-2V7zm5 3a1 1 0 000 2h6a1 1 0 000-2H7z"/>
+          </svg>
+        </div>
+        <span class="brand-name">TokoKu</span>
+      </div>
+
+      <div>
+        <div class="nav-label">Menu</div>
+        <nav class="nav">
+          <a class="nav-item active">
+            <svg viewBox="0 0 20 20" fill="currentColor">
+              <path d="M3 4h14v2H3V4zm0 5h14v2H3V9zm0 5h14v2H3v-2z"/>
+            </svg>
+            Daftar Barang
+          </a>
+          <a class="nav-item">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M9 19V6a2 2 0 00-2-2H5a2 2 0 00-2 2v13M9 19h10M9 19H1m14 0V10a2 2 0 00-2-2h-2a2 2 0 00-2 2v9m6 0h4m-4 0H9"/>
+            </svg>
+            Laporan
+          </a>
+          <a class="nav-item">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="10" cy="7" r="3"/>
+              <path d="M4 17c0-3.3 2.7-6 6-6s6 2.7 6 6"/>
+            </svg>
+            Akun
+          </a>
+        </nav>
+      </div>
+    </aside>
+
+    <!-- ============================== -->
+    <!-- MAIN                           -->
+    <!-- ============================== -->
+    <main class="main">
+
+      <!-- Topbar -->
+      <div class="topbar">
+        <div>
+          <div class="page-title">Daftar <span>Barang</span></div>
+          <div class="page-sub">Kelola inventaris toko kamu</div>
+        </div>
+        <button class="btn btn-accent" id="btnTambah">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="white" stroke-width="2">
+            <path d="M7 1v12M1 7h12"/>
+          </svg>
+          Tambah Barang
+        </button>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats">
+        <div class="stat-card">
+          <div class="stat-label">Total Barang</div>
+          <div class="stat-value" id="statTotal">0</div>
+          <div class="stat-badge">item</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Harga Tertinggi</div>
+          <div class="stat-value" id="statMax" style="font-size: 20px">Rp 0</div>
+          <div class="stat-badge">tertinggi</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Rata-rata Harga</div>
+          <div class="stat-value" id="statAvg" style="font-size: 20px">Rp 0</div>
+          <div class="stat-badge">rata-rata</div>
+        </div>
+      </div>
+
+      <!-- Card Inventaris -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Inventaris Barang</div>
+          <button class="btn btn-ghost" id="btnToggleForm">+ Baru</button>
+        </div>
+
+        <!-- Form Tambah -->
+        <div class="form-panel" id="formTambah">
+          <div class="field">
+            <label>Nama Barang</label>
+            <input type="text" id="nama" placeholder="cth: Sabun Mandi">
+          </div>
+          <div class="field">
+            <label>Harga (Rp)</label>
+            <input type="number" id="harga" placeholder="cth: 5000">
+          </div>
+          <button class="btn btn-accent" id="btnSimpan">Simpan</button>
+        </div>
+
+        <!-- Tabel -->
+        <table>
+          <thead>
             <tr>
-                <th class="p-2">ID</th>
-                <th class="p-2">Nama Barang</th>
-                <th class="p-2">Harga</th>
+              <th style="width: 80px">ID</th>
+              <th>Nama Barang</th>
+              <th>Harga</th>
             </tr>
-        </thead>
-        <tbody id="tabel-barang">
-        </tbody>
-    </table>
+          </thead>
+          <tbody id="tabel-barang">
+            <tr>
+              <td colspan="3">
+                <div class="empty-state">
+                  <div class="empty-icon">📦</div>
+                  Belum ada barang. Tambahkan sekarang!
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
-    <script src="app.js"></script>
+    </main>
+  </div>
 
+  <!-- ============================== -->
+  <!-- TOAST                          -->
+  <!-- ============================== -->
+  <div class="toast" id="toast">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M2 7l3.5 3.5L12 3"/>
+    </svg>
+    <span id="toast-msg"></span>
+  </div>
+
+  <!-- ============================== -->
+  <!-- SCRIPTS                        -->
+  <!-- ============================== -->
+  <script src="app.js"></script>
+  <script>
+    let allBarang = [];
+
+    // --- Toast ---
+    function showToast(msg) {
+      document.getElementById('toast-msg').textContent = msg;
+      const t = document.getElementById('toast');
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    // --- Stats ---
+    function updateStats() {
+      const prices = allBarang.map(r => Number(r.harga) || 0);
+      const total  = allBarang.length;
+      const max    = total ? Math.max(...prices) : 0;
+      const avg    = total ? Math.round(prices.reduce((a, b) => a + b, 0) / total) : 0;
+
+      document.getElementById('statTotal').textContent = total;
+      document.getElementById('statMax').textContent   = 'Rp ' + max.toLocaleString('id-ID');
+      document.getElementById('statAvg').textContent   = 'Rp ' + avg.toLocaleString('id-ID');
+    }
+
+    // --- Render Table ---
+    function renderTable(data) {
+      const tbody = document.getElementById('tabel-barang');
+
+      if (!data || data.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="3">
+              <div class="empty-state">
+                <div class="empty-icon">📦</div>
+                Belum ada barang.
+              </div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = data.map((b, i) => `
+        <tr>
+          <td><span class="badge-id">${i + 1}</span></td>
+          <td>${b.nama_barang}</td>
+          <td><span class="harga-val">Rp ${Number(b.harga).toLocaleString('id-ID')}</span></td>
+        </tr>
+      `).join('');
+
+      allBarang = data;
+      updateStats();
+    }
+
+    // --- Toggle Form ---
+    document.getElementById('btnTambah').onclick = () => {
+      document.getElementById('formTambah').classList.toggle('open');
+    };
+
+    document.getElementById('btnToggleForm').onclick = () => {
+      document.getElementById('formTambah').classList.toggle('open');
+    };
+
+    // --- Simpan Barang ---
+    document.getElementById('btnSimpan').onclick = () => {
+      const nama  = document.getElementById('nama').value;
+      const harga = document.getElementById('harga').value;
+
+      fetch('http://localhost:8080/platform/api-toko/tambah-barang.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nama_barang: nama, harga: harga }),
+      })
+        .then(res => res.json())
+        .then(data => {
+          showToast(data.pesan);
+          document.getElementById('formTambah').classList.remove('open');
+          document.getElementById('nama').value  = '';
+          document.getElementById('harga').value = '';
+          ambilDataBarang();
+        });
+    };
+
+    // --- Init ---
+    if (typeof ambilDataBarang !== 'undefined') ambilDataBarang();
+  </script>
 </body>
 </html>

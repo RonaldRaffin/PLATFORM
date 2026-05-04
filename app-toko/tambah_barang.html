@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tambah Barang</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #09090f;
+  --surface: #10101a;
+  --surface2: #16161f;
+  --border: rgba(255,255,255,0.06);
+  --border-hover: rgba(255,255,255,0.13);
+  --accent: #6c63ff;
+  --accent-light: #a78bfa;
+  --accent-glow: rgba(108,99,255,0.18);
+  --text: #eeeeff;
+  --text-muted: #6b6a80;
+  --text-dim: #2a2938;
+  --green: #34d399;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+/* Decorative bg circles */
+body::before {
+  content: '';
+  position: fixed;
+  top: -160px; left: -160px;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(108,99,255,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  bottom: -120px; right: -120px;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(167,139,250,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.wrapper {
+  width: 100%;
+  max-width: 420px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Logo */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 32px;
+}
+
+.logo-icon {
+  width: 38px; height: 38px;
+  background: var(--accent);
+  border-radius: 11px;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 24px rgba(108,99,255,0.4);
+}
+
+.logo-icon svg { width: 20px; height: 20px; }
+
+.logo-name {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 18px;
+  letter-spacing: -0.5px;
+}
+
+/* Card */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  padding: 32px;
+  box-shadow: 0 0 60px rgba(0,0,0,0.5);
+}
+
+.card-top {
+  margin-bottom: 28px;
+}
+
+.card-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin-bottom: 6px;
+}
+
+.card-title span { color: var(--accent-light); }
+
+.card-sub {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* Field */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.field label {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.field input {
+  background: var(--surface2);
+  border: 1px solid var(--border-hover);
+  border-radius: 12px;
+  padding: 13px 16px;
+  font-size: 14px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  width: 100%;
+}
+
+.field input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.field input::placeholder { color: var(--text-dim); }
+
+/* Prefix input wrapper */
+.input-wrapper {
+  position: relative;
+}
+
+.input-prefix {
+  position: absolute;
+  left: 16px; top: 50%;
+  transform: translateY(-50%);
+  font-size: 13px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.input-wrapper input { padding-left: 42px; }
+
+/* Button */
+.btn-submit {
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  border: none;
+  margin-top: 8px;
+  box-shadow: 0 0 28px rgba(108,99,255,0.35);
+  transition: all 0.15s;
+}
+
+.btn-submit:hover { background: #5b54e0; transform: translateY(-1px); box-shadow: 0 0 36px rgba(108,99,255,0.5); }
+.btn-submit:active { transform: scale(0.98); }
+
+/* Result */
+.result {
+  margin-top: 16px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  text-align: center;
+  display: none;
+}
+
+.result.show { display: block; }
+.result.success { background: rgba(52,211,153,0.1); color: var(--green); border: 1px solid rgba(52,211,153,0.2); }
+.result.error { background: rgba(239,68,68,0.1); color: #f87171; border: 1px solid rgba(239,68,68,0.2); }
+</style>
+</head>
+<body>
+
+<div class="wrapper">
+
+  <div class="logo">
+    <div class="logo-icon">
+      <svg viewBox="0 0 20 20" fill="white"><path d="M2 4a2 2 0 012-2h12a2 2 0 012 2v1H2V4zm0 3h16v9a2 2 0 01-2 2H4a2 2 0 01-2-2V7zm5 3a1 1 0 000 2h6a1 1 0 000-2H7z"/></svg>
+    </div>
+    <span class="logo-name">TokoKu</span>
+  </div>
+
+  <div class="card">
+    <div class="card-top">
+      <div class="card-title">Tambah <span>Barang</span></div>
+      <div class="card-sub">Isi form di bawah untuk menambahkan barang baru</div>
+    </div>
+
+    <div class="field">
+      <label>Nama Barang</label>
+      <input type="text" id="nama" placeholder="cth: Sabun Mandi, Teh Botol...">
+    </div>
+
+    <div class="field">
+      <label>Harga</label>
+      <div class="input-wrapper">
+        <span class="input-prefix">Rp</span>
+        <input type="number" id="harga" placeholder="0">
+      </div>
+    </div>
+
+    <button class="btn-submit" onclick="tambahBarang()">Simpan Barang</button>
+
+    <div class="result" id="hasil"></div>
+  </div>
+
+</div>
+
+<script>
+function tambahBarang(){
+  const nama = document.getElementById("nama").value;
+  const harga = document.getElementById("harga").value;
+
+  fetch("https://dbtoko.infinityfreeapp.com/API-TOKO/get_barang.php", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ nama_barang: nama, harga: harga })
+  })
+  .then(res => res.json())
+  .then(data => {
+    const el = document.getElementById("hasil");
+    el.textContent = data.pesan;
+    el.className = "result show success";
+  })
+  .catch(() => {
+    const el = document.getElementById("hasil");
+    el.textContent = "Terjadi kesalahan. Coba lagi.";
+    el.className = "result show error";
+  });
+}
+</script>
+
+</body>
+</html>
