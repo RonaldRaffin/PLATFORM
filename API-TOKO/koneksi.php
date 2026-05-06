@@ -16,6 +16,4 @@ $koneksi = mysqli_connect($host, $user, $pass, $db);
 if (!$koneksi) {
     die(json_encode(["status" => "error", "pesan" => "Koneksi Database Gagal!"]));
 }
-
-
 ?>

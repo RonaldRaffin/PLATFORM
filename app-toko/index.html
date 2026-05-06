@@ -6,23 +6,13 @@
   <link rel="manifest" href="./manifest.json">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link
-    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
     rel="stylesheet"
   >
 
   <style>
-    /* ============================== */
-    /* RESET                          */
-    /* ============================== */
-    *, *::before, *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    /* ============================== */
-    /* VARIABLES                      */
-    /* ============================== */
     :root {
       --bg:           #09090f;
       --surface:      #10101a;
@@ -37,11 +27,12 @@
       --text-dim:     #2e2d3d;
       --green:        #34d399;
       --green-bg:     rgba(52, 211, 153, 0.1);
+      --red:          #f87171;
+      --red-bg:       rgba(248, 113, 113, 0.1);
+      --yellow:       #fbbf24;
+      --yellow-bg:    rgba(251, 191, 36, 0.1);
     }
 
-    /* ============================== */
-    /* BASE                           */
-    /* ============================== */
     body {
       background: var(--bg);
       color: var(--text);
@@ -49,14 +40,9 @@
       min-height: 100vh;
     }
 
-    .layout {
-      display: flex;
-      min-height: 100vh;
-    }
+    .layout { display: flex; min-height: 100vh; }
 
-    /* ============================== */
-    /* SIDEBAR                        */
-    /* ============================== */
+    /* SIDEBAR */
     .sidebar {
       width: 230px;
       background: var(--surface);
@@ -68,386 +54,254 @@
       flex-shrink: 0;
     }
 
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 0 6px;
-    }
+    .brand { display: flex; align-items: center; gap: 10px; padding: 0 6px; }
 
     @keyframes float {
-      0%   { transform: translateY(0px);  box-shadow: 0 0 24px rgba(108, 99, 255, 0.4); }
-      50%  { transform: translateY(-7px); box-shadow: 0 8px 32px rgba(108, 99, 255, 0.7); }
-      100% { transform: translateY(0px);  box-shadow: 0 0 24px rgba(108, 99, 255, 0.4); }
+      0%   { transform: translateY(0px);  box-shadow: 0 0 24px rgba(108,99,255,0.4); }
+      50%  { transform: translateY(-7px); box-shadow: 0 8px 32px rgba(108,99,255,0.7); }
+      100% { transform: translateY(0px);  box-shadow: 0 0 24px rgba(108,99,255,0.4); }
     }
 
     .brand-icon {
-      width: 36px;
-      height: 36px;
+      width: 36px; height: 36px;
       background: var(--accent);
       border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: flex; align-items: center; justify-content: center;
       animation: float 3s ease-in-out infinite;
     }
 
-    .brand-icon svg {
-      width: 18px;
-      height: 18px;
-    }
-
-    .brand-name {
-      font-family: 'Syne', sans-serif;
-      font-weight: 800;
-      font-size: 17px;
-      letter-spacing: -0.5px;
-    }
+    .brand-icon svg { width: 18px; height: 18px; }
+    .brand-name { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 17px; letter-spacing: -0.5px; }
 
     .nav-label {
-      font-size: 10px;
-      font-weight: 600;
-      color: var(--text-dim);
-      letter-spacing: 1.2px;
-      text-transform: uppercase;
-      padding: 0 12px;
-      margin-bottom: 6px;
+      font-size: 10px; font-weight: 600; color: var(--text-dim);
+      letter-spacing: 1.2px; text-transform: uppercase;
+      padding: 0 12px; margin-bottom: 6px;
     }
 
-    .nav {
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-    }
+    .nav { display: flex; flex-direction: column; gap: 3px; }
 
     .nav-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 9px 12px;
-      border-radius: 10px;
-      font-size: 13.5px;
-      font-weight: 400;
-      color: var(--text-muted);
-      cursor: pointer;
-      transition: all 0.15s;
-      text-decoration: none;
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 12px; border-radius: 10px;
+      font-size: 13.5px; font-weight: 400;
+      color: var(--text-muted); cursor: pointer;
+      transition: all 0.15s; text-decoration: none;
     }
 
     .nav-item:hover { background: var(--surface2); color: var(--text); }
     .nav-item.active { background: var(--accent-glow); color: var(--accent2); font-weight: 500; }
+    .nav-item svg { width: 15px; height: 15px; flex-shrink: 0; }
 
-    .nav-item svg {
-      width: 15px;
-      height: 15px;
-      flex-shrink: 0;
-    }
-
-    /* ============================== */
-    /* MAIN                           */
-    /* ============================== */
-    .main {
-      flex: 1;
-      padding: 40px 44px;
-      overflow: auto;
-    }
+    /* MAIN */
+    .main { flex: 1; padding: 40px 44px; overflow: auto; }
 
     .topbar {
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
+      display: flex; align-items: flex-end; justify-content: space-between;
       margin-bottom: 32px;
     }
 
-    .page-title {
-      font-family: 'Syne', sans-serif;
-      font-size: 26px;
-      font-weight: 800;
-      letter-spacing: -0.8px;
-      line-height: 1;
-    }
-
+    .page-title { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; letter-spacing: -0.8px; line-height: 1; }
     .page-title span { color: var(--accent2); }
+    .page-sub { font-size: 13px; color: var(--text-muted); margin-top: 5px; }
 
-    .page-sub {
-      font-size: 13px;
-      color: var(--text-muted);
-      margin-top: 5px;
-    }
-
-    /* ============================== */
-    /* STATS                          */
-    /* ============================== */
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 14px;
-      margin-bottom: 28px;
-    }
+    /* STATS */
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 28px; }
 
     .stat-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 20px 22px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 16px; padding: 20px 22px;
       transition: border-color 0.2s, transform 0.2s;
     }
 
-    .stat-card:hover {
-      border-color: var(--border-hover);
-      transform: translateY(-2px);
-    }
+    .stat-card:hover { border-color: var(--border-hover); transform: translateY(-2px); }
+    .stat-label { font-size: 11px; color: var(--text-muted); font-weight: 500; letter-spacing: 0.6px; text-transform: uppercase; margin-bottom: 10px; }
+    .stat-value { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 28px; font-weight: 700; color: var(--text); line-height: 1; letter-spacing: -0.5px; }
+    .stat-badge { display: inline-block; margin-top: 8px; font-size: 11px; padding: 3px 8px; border-radius: 20px; background: var(--green-bg); color: var(--green); font-weight: 500; }
 
-    .stat-label {
-      font-size: 11px;
-      color: var(--text-muted);
-      font-weight: 500;
-      letter-spacing: 0.6px;
-      text-transform: uppercase;
-      margin-bottom: 10px;
-    }
-
-    .stat-value {
-      font-family: 'Syne', sans-serif;
-      font-size: 28px;
-      font-weight: 700;
-      color: var(--text);
-      line-height: 1;
-    }
-
-    .stat-badge {
-      display: inline-block;
-      margin-top: 8px;
-      font-size: 11px;
-      padding: 3px 8px;
-      border-radius: 20px;
-      background: var(--green-bg);
-      color: var(--green);
-      font-weight: 500;
-    }
-
-    /* ============================== */
-    /* CARD                           */
-    /* ============================== */
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      overflow: hidden;
-    }
+    /* CARD */
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; overflow: hidden; }
 
     .card-header {
-      padding: 18px 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      padding: 18px 24px; display: flex; align-items: center; justify-content: space-between;
       border-bottom: 1px solid var(--border);
     }
 
-    .card-title {
-      font-family: 'Syne', sans-serif;
-      font-size: 14px;
-      font-weight: 600;
-      letter-spacing: -0.2px;
-    }
+    .card-title { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 600; letter-spacing: -0.2px; }
 
-    /* ============================== */
-    /* BUTTONS                        */
-    /* ============================== */
+    /* BUTTONS */
     .btn {
-      padding: 9px 18px;
-      border-radius: 10px;
-      font-size: 13px;
-      font-weight: 500;
-      font-family: 'DM Sans', sans-serif;
-      cursor: pointer;
-      border: none;
-      transition: all 0.15s;
-      white-space: nowrap;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
+      padding: 9px 18px; border-radius: 10px; font-size: 13px; font-weight: 500;
+      font-family: 'DM Sans', sans-serif; cursor: pointer; border: none;
+      transition: all 0.15s; white-space: nowrap;
+      display: inline-flex; align-items: center; gap: 6px;
     }
 
-    .btn-accent {
-      background: var(--accent);
-      color: #fff;
-      box-shadow: 0 0 20px rgba(108, 99, 255, 0.3);
-    }
-
-    .btn-accent:hover {
-      background: #5b54e0;
-      transform: translateY(-1px);
-      box-shadow: 0 0 28px rgba(108, 99, 255, 0.45);
-    }
-
+    .btn-accent { background: var(--accent); color: #fff; box-shadow: 0 0 20px rgba(108,99,255,0.3); }
+    .btn-accent:hover { background: #5b54e0; transform: translateY(-1px); box-shadow: 0 0 28px rgba(108,99,255,0.45); }
     .btn-accent:active { transform: scale(0.97); }
 
-    .btn-ghost {
-      background: var(--surface2);
-      color: var(--text-muted);
-      border: 1px solid var(--border-hover);
-    }
+    .btn-ghost { background: var(--surface2); color: var(--text-muted); border: 1px solid var(--border-hover); }
+    .btn-ghost:hover { color: var(--text); }
 
-    .btn-ghost:hover {
-      color: var(--text);
-      border-color: var(--border-hover);
-    }
+    .btn-danger { background: var(--red-bg); color: var(--red); border: 1px solid rgba(248,113,113,0.2); }
+    .btn-danger:hover { background: rgba(248,113,113,0.2); }
 
-    /* ============================== */
-    /* FORM PANEL                     */
-    /* ============================== */
+    .btn-edit { background: var(--yellow-bg); color: var(--yellow); border: 1px solid rgba(251,191,36,0.2); }
+    .btn-edit:hover { background: rgba(251,191,36,0.2); }
+
+    .btn-sm { padding: 5px 12px; font-size: 12px; border-radius: 7px; }
+
+    /* FORM PANEL */
     .form-panel {
-      display: none;
-      padding: 20px 24px;
-      border-bottom: 1px solid var(--border);
-      background: var(--surface2);
-      gap: 14px;
-      flex-wrap: wrap;
-      align-items: flex-end;
+      display: none; padding: 20px 24px; border-bottom: 1px solid var(--border);
+      background: var(--surface2); gap: 14px; flex-wrap: wrap; align-items: flex-end;
     }
 
     .form-panel.open { display: flex; }
 
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 7px;
-      flex: 1;
-      min-width: 180px;
-    }
+    /* Edit mode — border kuning */
+    .form-panel.edit-mode { border-left: 3px solid var(--yellow); }
 
-    .field label {
-      font-size: 11px;
-      color: var(--text-muted);
-      font-weight: 500;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-    }
+    .field { display: flex; flex-direction: column; gap: 7px; flex: 1; min-width: 180px; }
+
+    .field label { font-size: 11px; color: var(--text-muted); font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase; }
 
     .field input {
-      background: var(--bg);
-      border: 1px solid var(--border-hover);
-      border-radius: 10px;
-      padding: 10px 14px;
-      font-size: 13.5px;
-      color: var(--text);
-      font-family: 'DM Sans', sans-serif;
-      outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
+      background: var(--bg); border: 1px solid var(--border-hover);
+      border-radius: 10px; padding: 10px 14px; font-size: 13.5px;
+      color: var(--text); font-family: 'DM Sans', sans-serif;
+      outline: none; transition: border-color 0.2s, box-shadow 0.2s;
     }
 
-    .field input:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px var(--accent-glow);
-    }
-
+    .field input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
     .field input::placeholder { color: var(--text-dim); }
 
-    /* ============================== */
-    /* TABLE                          */
-    /* ============================== */
-    table {
-      width: 100%;
-      border-collapse: collapse;
+    .edit-notice {
+      width: 100%; font-size: 12px; color: var(--yellow);
+      background: var(--yellow-bg); border-radius: 8px;
+      padding: 7px 12px; display: none;
     }
 
+    .edit-notice.show { display: block; }
+
+    /* TABLE */
+    table { width: 100%; border-collapse: collapse; }
     thead tr { background: var(--surface2); }
 
     th {
-      padding: 11px 24px;
-      text-align: left;
-      font-size: 10.5px;
-      font-weight: 500;
-      color: var(--text-muted);
-      letter-spacing: 0.9px;
-      text-transform: uppercase;
+      padding: 11px 24px; text-align: left; font-size: 10.5px; font-weight: 500;
+      color: var(--text-muted); letter-spacing: 0.9px; text-transform: uppercase;
     }
 
-    td {
-      padding: 14px 24px;
-      font-size: 13.5px;
-      color: var(--text);
-      border-top: 1px solid var(--border);
-    }
+    td { padding: 14px 24px; font-size: 13.5px; color: var(--text); border-top: 1px solid var(--border); vertical-align: middle; }
 
     tbody tr { transition: background 0.1s; }
     tbody tr:hover { background: var(--surface2); }
 
     .badge-id {
-      display: inline-block;
-      background: var(--accent-glow);
-      color: var(--accent2);
-      font-size: 11px;
-      font-weight: 600;
-      padding: 3px 9px;
-      border-radius: 6px;
-      font-family: 'Syne', sans-serif;
-      letter-spacing: 0.3px;
+      display: inline-block; background: var(--accent-glow); color: var(--accent2);
+      font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 6px;
+      font-family: 'Syne', sans-serif; letter-spacing: 0.3px;
     }
 
-    .harga-val {
-      font-family: 'Syne', sans-serif;
-      font-weight: 600;
-      color: var(--green);
-    }
+    .harga-val { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 600; color: var(--green); letter-spacing: -0.3px; }
 
-    .empty-state {
-      padding: 64px 24px;
-      text-align: center;
-      color: var(--text-muted);
-      font-size: 13.5px;
-    }
+    .action-cell { display: flex; gap: 6px; }
 
-    .empty-icon {
-      width: 48px;
-      height: 48px;
-      background: var(--surface2);
+    /* SEARCH BAR */
+    .search-box {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--bg);
       border: 1px solid var(--border-hover);
-      border-radius: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 14px;
-      font-size: 22px;
+      border-radius: 8px;
+      padding: 6px 10px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      width: 180px;
     }
 
-    /* ============================== */
-    /* TOAST                          */
-    /* ============================== */
-    .toast {
-      position: fixed;
-      bottom: 28px;
-      right: 28px;
-      background: var(--surface);
-      border: 1px solid var(--green);
-      border-radius: 12px;
-      padding: 13px 20px;
+    .search-box:focus-within {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+      width: 220px;
+      transition: border-color 0.2s, box-shadow 0.2s, width 0.25s ease;
+    }
+
+    .search-box svg { flex-shrink: 0; color: var(--text-muted); }
+
+    .search-box input {
+      flex: 1;
+      background: none;
+      border: none;
+      outline: none;
+      font-size: 12.5px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      width: 100%;
+    }
+
+    .search-box input::placeholder { color: var(--text-dim); }
+
+    .search-clear {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-muted);
+      padding: 0;
+      display: none;
+      line-height: 1;
       font-size: 13px;
-      color: var(--green);
-      transform: translateY(16px);
-      opacity: 0;
-      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-      pointer-events: none;
-      z-index: 999;
-      display: flex;
-      align-items: center;
-      gap: 8px;
     }
 
-    .toast.show {
-      transform: translateY(0);
-      opacity: 1;
+    .search-clear:hover { color: var(--text); }
+    .search-clear.show { display: block; }
+
+    .search-count {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 7px;
+      padding: 0 2px;
+      display: none;
     }
+
+    .search-count.show { display: block; }
+
+    .highlight {
+      background: rgba(108, 99, 255, 0.25);
+      color: var(--accent2);
+      border-radius: 3px;
+      padding: 0 2px;
+    }
+
+    .empty-state { padding: 64px 24px; text-align: center; color: var(--text-muted); font-size: 13.5px; }
+    .empty-icon {
+      width: 48px; height: 48px; background: var(--surface2); border: 1px solid var(--border-hover);
+      border-radius: 14px; display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 14px; font-size: 22px;
+    }
+
+    /* TOAST */
+    .toast {
+      position: fixed; bottom: 28px; right: 28px;
+      background: var(--surface); border: 1px solid var(--green);
+      border-radius: 12px; padding: 13px 20px; font-size: 13px; color: var(--green);
+      transform: translateY(16px); opacity: 0;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      pointer-events: none; z-index: 999;
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.error { border-color: var(--red); color: var(--red); }
   </style>
 </head>
 
 <body>
   <div class="layout">
 
-    <!-- ============================== -->
-    <!-- SIDEBAR                        -->
-    <!-- ============================== -->
+    <!-- SIDEBAR -->
     <aside class="sidebar">
       <div class="brand">
         <div class="brand-icon">
@@ -467,26 +321,12 @@
             </svg>
             Daftar Barang
           </a>
-          <a class="nav-item">
-            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
-              <path d="M9 19V6a2 2 0 00-2-2H5a2 2 0 00-2 2v13M9 19h10M9 19H1m14 0V10a2 2 0 00-2-2h-2a2 2 0 00-2 2v9m6 0h4m-4 0H9"/>
-            </svg>
-            Laporan
-          </a>
-          <a class="nav-item">
-            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
-              <circle cx="10" cy="7" r="3"/>
-              <path d="M4 17c0-3.3 2.7-6 6-6s6 2.7 6 6"/>
-            </svg>
-            Akun
-          </a>
+
         </nav>
       </div>
     </aside>
 
-    <!-- ============================== -->
-    <!-- MAIN                           -->
-    <!-- ============================== -->
+    <!-- MAIN -->
     <main class="main">
 
       <!-- Topbar -->
@@ -526,11 +366,28 @@
       <div class="card">
         <div class="card-header">
           <div class="card-title">Inventaris Barang</div>
-          <button class="btn btn-ghost" id="btnToggleForm">+ Baru</button>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <div class="search-box" id="searchBox">
+              <svg width="13" height="13" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.8">
+                <circle cx="6.5" cy="6.5" r="5"/>
+                <path d="M10.5 10.5l3 3"/>
+              </svg>
+              <input type="text" id="searchInput" placeholder="Cari barang...">
+              <button class="search-clear" id="searchClear" onclick="clearSearch()">✕</button>
+            </div>
+            <button class="btn btn-ghost" id="btnToggleForm">+ Baru</button>
+          </div>
         </div>
 
-        <!-- Form Tambah -->
+        <!-- Form Tambah / Edit -->
         <div class="form-panel" id="formTambah">
+          <!-- Notif mode edit -->
+          <div class="edit-notice" id="editNotice">
+             Mode Edit — ubah data lalu klik Simpan Perubahan
+          </div>
+
+          <input type="hidden" id="editId">
+
           <div class="field">
             <label>Nama Barang</label>
             <input type="text" id="nama" placeholder="cth: Sabun Mandi">
@@ -539,7 +396,11 @@
             <label>Harga (Rp)</label>
             <input type="number" id="harga" placeholder="cth: 5000">
           </div>
-          <button class="btn btn-accent" id="btnSimpan">Simpan</button>
+
+          <div style="display:flex; gap:8px; align-items:flex-end;">
+            <button class="btn btn-accent" id="btnSimpan">Simpan</button>
+            <button class="btn btn-ghost" id="btnBatal" style="display:none" onclick="batalEdit()">Batal</button>
+          </div>
         </div>
 
         <!-- Tabel -->
@@ -549,11 +410,12 @@
               <th style="width: 80px">ID</th>
               <th>Nama Barang</th>
               <th>Harga</th>
+              <th style="width: 140px">Aksi</th>
             </tr>
           </thead>
           <tbody id="tabel-barang">
             <tr>
-              <td colspan="3">
+              <td colspan="4">
                 <div class="empty-state">
                   <div class="empty-icon">📦</div>
                   Belum ada barang. Tambahkan sekarang!
@@ -567,9 +429,7 @@
     </main>
   </div>
 
-  <!-- ============================== -->
-  <!-- TOAST                          -->
-  <!-- ============================== -->
+  <!-- TOAST -->
   <div class="toast" id="toast">
     <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2">
       <path d="M2 7l3.5 3.5L12 3"/>
@@ -577,93 +437,215 @@
     <span id="toast-msg"></span>
   </div>
 
-  <!-- ============================== -->
-  <!-- SCRIPTS                        -->
-  <!-- ============================== -->
   <script src="app.js"></script>
   <script>
+    const API = 'http://localhost:8080/platform/api-toko';
     let allBarang = [];
 
-    // --- Toast ---
-    function showToast(msg) {
-      document.getElementById('toast-msg').textContent = msg;
+    // ── Toast ──
+    function showToast(msg, type = 'success') {
       const t = document.getElementById('toast');
-      t.classList.add('show');
-      setTimeout(() => t.classList.remove('show'), 3000);
+      document.getElementById('toast-msg').textContent = msg;
+      t.className = 'toast show' + (type === 'error' ? ' error' : '');
+      setTimeout(() => t.className = 'toast', 3000);
     }
 
-    // --- Stats ---
+    // ── Stats ──
     function updateStats() {
       const prices = allBarang.map(r => Number(r.harga) || 0);
       const total  = allBarang.length;
       const max    = total ? Math.max(...prices) : 0;
       const avg    = total ? Math.round(prices.reduce((a, b) => a + b, 0) / total) : 0;
-
       document.getElementById('statTotal').textContent = total;
       document.getElementById('statMax').textContent   = 'Rp ' + max.toLocaleString('id-ID');
       document.getElementById('statAvg').textContent   = 'Rp ' + avg.toLocaleString('id-ID');
     }
 
-    // --- Render Table ---
+    // ── Render Tabel ──
     function renderTable(data) {
       const tbody = document.getElementById('tabel-barang');
+      allBarang = data || [];
 
-      if (!data || data.length === 0) {
+      if (!allBarang.length) {
         tbody.innerHTML = `
-          <tr>
-            <td colspan="3">
-              <div class="empty-state">
-                <div class="empty-icon">📦</div>
-                Belum ada barang.
-              </div>
-            </td>
-          </tr>
-        `;
+          <tr><td colspan="4">
+            <div class="empty-state">
+              <div class="empty-icon">📦</div>
+              Belum ada barang.
+            </div>
+          </td></tr>`;
+        updateStats();
         return;
       }
 
-      tbody.innerHTML = data.map((b, i) => `
+      tbody.innerHTML = allBarang.map((b, i) => `
         <tr>
           <td><span class="badge-id">${i + 1}</span></td>
           <td>${b.nama_barang}</td>
           <td><span class="harga-val">Rp ${Number(b.harga).toLocaleString('id-ID')}</span></td>
+          <td>
+            <div class="action-cell">
+              <button class="btn btn-sm btn-edit"
+                onclick="isiFormEdit(${b.id}, '${b.nama_barang.replace(/'/g,"\\'")}', ${b.harga})">
+                 Edit
+              </button>
+              <button class="btn btn-sm btn-danger"
+                onclick="hapusBarang(${b.id}, '${b.nama_barang.replace(/'/g,"\\'")}')">
+                 Hapus
+              </button>
+            </div>
+          </td>
         </tr>
       `).join('');
 
-      allBarang = data;
       updateStats();
     }
 
-    // --- Toggle Form ---
+    // ── Toggle Form ──
     document.getElementById('btnTambah').onclick = () => {
+      batalEdit();
       document.getElementById('formTambah').classList.toggle('open');
     };
 
     document.getElementById('btnToggleForm').onclick = () => {
+      batalEdit();
       document.getElementById('formTambah').classList.toggle('open');
     };
 
-    // --- Simpan Barang ---
+    // ── Simpan (Tambah atau Update) ──
     document.getElementById('btnSimpan').onclick = () => {
-      const nama  = document.getElementById('nama').value;
+      const id    = document.getElementById('editId').value;
+      const nama  = document.getElementById('nama').value.trim();
       const harga = document.getElementById('harga').value;
 
-      fetch('http://localhost:8080/platform/api-toko/tambah-barang.php', {
+      if (!nama)  { showToast('Nama barang tidak boleh kosong!', 'error'); return; }
+      if (!harga) { showToast('Harga tidak boleh kosong!', 'error'); return; }
+
+      const isEdit   = id !== '';
+      const endpoint = isEdit ? `${API}/edit_barang.php` : `${API}/tambah-barang.php`;
+      const payload  = { nama_barang: nama, harga: harga };
+      if (isEdit) payload.id = parseInt(id);
+
+      fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nama_barang: nama, harga: harga }),
+        body: JSON.stringify(payload)
       })
         .then(res => res.json())
         .then(data => {
-          showToast(data.pesan);
-          document.getElementById('formTambah').classList.remove('open');
-          document.getElementById('nama').value  = '';
-          document.getElementById('harga').value = '';
-          ambilDataBarang();
-        });
+          showToast(data.pesan, data.status === 'success' ? 'success' : 'error');
+          if (data.status === 'success') {
+            batalEdit();
+            ambilDataBarang();
+          }
+        })
+        .catch(() => showToast('Error koneksi API', 'error'));
     };
 
-    // --- Init ---
+    // ── Edit: isi form dari baris tabel ──
+    function isiFormEdit(id, nama, harga) {
+      document.getElementById('editId').value    = id;
+      document.getElementById('nama').value      = nama;
+      document.getElementById('harga').value     = harga;
+      document.getElementById('btnSimpan').textContent = '💾 Simpan Perubahan';
+      document.getElementById('btnBatal').style.display = 'inline-flex';
+      document.getElementById('editNotice').classList.add('show');
+      document.getElementById('formTambah').classList.add('open', 'edit-mode');
+      document.getElementById('formTambah').scrollIntoView({ behavior: 'smooth' });
+      document.getElementById('nama').focus();
+    }
+
+    // ── Batal Edit ──
+    function batalEdit() {
+      document.getElementById('editId').value    = '';
+      document.getElementById('nama').value      = '';
+      document.getElementById('harga').value     = '';
+      document.getElementById('btnSimpan').textContent = 'Simpan';
+      document.getElementById('btnBatal').style.display = 'none';
+      document.getElementById('editNotice').classList.remove('show');
+      document.getElementById('formTambah').classList.remove('edit-mode');
+    }
+
+    // ── Hapus dengan konfirmasi ──
+    function hapusBarang(id, nama) {
+      // Konfirmasi dulu sebelum hapus!
+      const yakin = confirm(`Yakin ingin menghapus "${nama}"?\n\nData yang dihapus tidak bisa dikembalikan.`);
+      if (!yakin) return;
+
+      fetch(`${API}/hapus_barang.php`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: id })
+      })
+        .then(res => res.json())
+        .then(data => {
+          showToast(data.pesan, data.status === 'success' ? 'success' : 'error');
+          if (data.status === 'success') ambilDataBarang();
+        })
+        .catch(() => showToast('Error koneksi API', 'error'));
+    }
+
+    // ── Realtime Search ──
+    function renderFiltered(keyword) {
+      const q     = keyword.trim().toLowerCase();
+      const clear = document.getElementById('searchClear');
+
+      clear.className = q ? 'search-clear show' : 'search-clear';
+
+      const filtered = q
+        ? allBarang.filter(b => b.nama_barang.toLowerCase().includes(q))
+        : allBarang;
+
+      const tbody = document.getElementById('tabel-barang');
+
+      if (!filtered.length) {
+        tbody.innerHTML = `
+          <tr><td colspan="4">
+            <div class="empty-state">
+              <div class="empty-icon">🔍</div>
+              Barang "${keyword}" tidak ditemukan.
+            </div>
+          </td></tr>`;
+        return;
+      }
+
+      function hl(text) {
+        if (!q) return text;
+        const regex = new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+        return text.replace(regex, '<span class="highlight">$1</span>');
+      }
+
+      tbody.innerHTML = filtered.map((b, i) => `
+        <tr>
+          <td><span class="badge-id">${i + 1}</span></td>
+          <td>${hl(b.nama_barang)}</td>
+          <td><span class="harga-val">Rp ${Number(b.harga).toLocaleString('id-ID')}</span></td>
+          <td>
+            <div class="action-cell">
+              <button class="btn btn-sm btn-edit"
+                onclick="isiFormEdit(${b.id}, '${b.nama_barang.replace(/'/g,"\\'")}', ${b.harga})">
+                 Edit
+              </button>
+              <button class="btn btn-sm btn-danger"
+                onclick="hapusBarang(${b.id}, '${b.nama_barang.replace(/'/g,"\\'")}')">
+                 Hapus
+              </button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function clearSearch() {
+      document.getElementById('searchInput').value = '';
+      renderFiltered('');
+    }
+
+    document.getElementById('searchInput').addEventListener('input', function () {
+      renderFiltered(this.value);
+    });
+
+    // ── Init ──
     if (typeof ambilDataBarang !== 'undefined') ambilDataBarang();
   </script>
 </body>
