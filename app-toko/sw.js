@@ -8,7 +8,7 @@ const urlsToCache = [
 
 // INSTALL
 self.addEventListener('install', event => {
-  self.skipWaiting(); // penting
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => cache.addAll(urlsToCache))
@@ -31,13 +31,13 @@ self.addEventListener('activate', event => {
   self.clients.claim();
 });
 
-// FETCH (JANGAN CACHE API!)
+// FETCH
 self.addEventListener('fetch', event => {
-  const url = event.request.url;
+  const url = event.request.url.toLowerCase(); // ← lowercase dulu
 
-  // ❗ SKIP API (biar tidak kena cache)
-  if (url.includes('/API-TOKO/')) {
-    return;
+  // Skip semua request ke API (PHP)
+  if (url.includes('/api-toko/') || url.includes('.php')) {
+    return; // biarkan browser fetch langsung, tanpa cache
   }
 
   event.respondWith(
