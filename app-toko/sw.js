@@ -1,12 +1,15 @@
-const CACHE_NAME = 'toko-pwa-v2';
+const CACHE_NAME = 'toko-pwa-v4';
 const urlsToCache = [
   './',
   './index.html',
   './app.js',
-  './manifest.json'
+  './manifest.json',
+  './tambah_barang.html'
 ];
 
+// ==============================
 // INSTALL
+// ==============================
 self.addEventListener('install', event => {
   self.skipWaiting();
   event.waitUntil(
@@ -15,7 +18,9 @@ self.addEventListener('install', event => {
   );
 });
 
+// ==============================
 // ACTIVATE (hapus cache lama)
+// ==============================
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(names => {
@@ -26,23 +31,36 @@ self.addEventListener('activate', event => {
           }
         })
       );
-    })
+    }).then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
-// FETCH
+// ==============================
+// FETCH — Network First
+// Selalu ambil dari server dulu.
+// Kalau offline/gagal, baru pakai cache.
+// ==============================
 self.addEventListener('fetch', event => {
-  const url = event.request.url.toLowerCase(); // ← lowercase dulu
+  const url = event.request.url.toLowerCase();
 
-  // Skip semua request ke API (PHP)
+  // Skip semua request ke API (PHP) — jangan pernah di-cache
   if (url.includes('/api-toko/') || url.includes('.php')) {
-    return; // biarkan browser fetch langsung, tanpa cache
+    return;
   }
 
   event.respondWith(
-    caches.match(event.request).then(response => {
-      return response || fetch(event.request);
-    })
+    fetch(event.request)
+      .then(networkResponse => {
+        // Berhasil ambil dari network → update cache sekalian
+        const responseClone = networkResponse.clone();
+        caches.open(CACHE_NAME).then(cache => {
+          cache.put(event.request, responseClone);
+        });
+        return networkResponse;
+      })
+      .catch(() => {
+        // Gagal (offline) → pakai cache sebagai fallback
+        return caches.match(event.request);
+      })
   );
 });
