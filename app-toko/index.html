@@ -20,6 +20,8 @@
       --ink4:      #c8c8c8;
       --border:    #0a0a0a;
       --border-lt: #e4e4e4;
+      --danger:    #e53935;
+      --success:   #2e7d32;
     }
 
     body { background: var(--bg2); color: var(--ink); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
@@ -72,7 +74,47 @@
       transition: all 0.15s; display: inline-flex; align-items: center; gap: 7px;
     }
     .btn-cta:hover { background: transparent; color: var(--ink); }
-    .hamburger { display: none; background: none; border: 1.5px solid var(--border-lt); border-radius: 8px; padding: 7px 9px; cursor: pointer; color: var(--ink); }
+
+    /* ── USER BADGE ── */
+    .user-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 14px 6px 8px;
+      border: 1.5px solid var(--border-lt);
+      border-radius: 99px;
+      background: var(--bg2);
+      font-size: 12.5px; font-weight: 600;
+      color: var(--ink2);
+      font-family: 'DM Sans', sans-serif;
+      letter-spacing: 0.3px;
+      cursor: default;
+      user-select: none;
+    }
+    .user-badge-icon {
+      width: 26px; height: 26px;
+      background: var(--ink);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .user-badge-icon svg { width: 13px; height: 13px; }
+
+    /* FIX #2: Hamburger + Mobile Menu */
+    .hamburger {
+      display: none; background: none; border: 1.5px solid var(--border-lt);
+      border-radius: 8px; padding: 7px 9px; cursor: pointer; color: var(--ink);
+      transition: all 0.15s;
+    }
+    .hamburger:hover { background: var(--bg2); }
+
+    .mobile-menu {
+      display: none;
+      position: fixed; top: 64px; left: 0; right: 0; z-index: 99;
+      background: var(--bg); border-bottom: 1.5px solid var(--border-lt);
+      padding: 16px 24px; flex-direction: column; gap: 10px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu .btn-cta { justify-content: center; }
 
     /* ── HERO ── */
     .hero {
@@ -109,8 +151,9 @@
       display: flex; align-items: center; gap: 6px;
     }
     .stat-label::before { content: ''; width: 5px; height: 5px; background: var(--ink); border-radius: 50%; display: block; flex-shrink: 0; }
-    .stat-value { font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 1px; line-height: 1; }
-    .stat-value.sm { font-size: 22px; margin-top: 2px; }
+    /* FIX #6: stat-value pakai clamp agar tidak overflow di mobile */
+    .stat-value { font-family: 'Bebas Neue', sans-serif; font-size: clamp(20px, 3vw, 36px); letter-spacing: 1px; line-height: 1; }
+    .stat-value.sm { font-size: clamp(16px, 2.2vw, 22px); margin-top: 2px; }
 
     /* ── TOOLBAR ── */
     .toolbar {
@@ -246,6 +289,71 @@
     .empty-num { font-family: 'Bebas Neue', sans-serif; font-size: 80px; color: var(--ink4); line-height: 1; margin-bottom: 10px; }
     .empty-text { font-size: 13px; color: var(--ink3); }
 
+    /* FIX #4: Toast notifikasi */
+    .toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+      background: var(--ink); color: var(--bg);
+      padding: 12px 24px; border-radius: 99px;
+      font-size: 13px; font-weight: 500;
+      display: flex; align-items: center; gap: 10px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+      transition: transform 0.3s cubic-bezier(.34,1.56,.64,1);
+      z-index: 999; white-space: nowrap;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    .toast.error { background: var(--danger); }
+    .toast.success { background: var(--success); }
+
+    /* FIX #3: Skeleton loading */
+    .skeleton-card {
+      background: var(--bg); border: 1.5px solid var(--border-lt);
+      border-radius: 16px; padding: 22px 22px 18px;
+      animation: shimmer 1.4s infinite;
+    }
+    .sk-line { background: var(--bg3); border-radius: 4px; margin-bottom: 10px; }
+    @keyframes shimmer {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.45; }
+    }
+
+    /* FIX #1: Modal detail barang */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0; z-index: 200;
+      background: rgba(10,10,10,0.5); backdrop-filter: blur(4px);
+      align-items: center; justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: var(--bg); border-radius: 20px;
+      border: 1.5px solid var(--border-lt);
+      padding: 36px; min-width: 320px; max-width: 460px; width: 90%;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.18);
+      animation: fadeUp 0.25s ease;
+    }
+    .modal-label {
+      font-family: 'DM Mono', monospace; font-size: 10px;
+      letter-spacing: 1.5px; text-transform: uppercase; color: var(--ink4); margin-bottom: 6px;
+    }
+    .modal-name {
+      font-family: 'Bebas Neue', sans-serif; font-size: 38px;
+      letter-spacing: 1px; line-height: 1.1; margin-bottom: 24px; word-break: break-word;
+    }
+    .modal-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 14px 0; border-bottom: 1px solid var(--border-lt);
+    }
+    .modal-row:last-of-type { border-bottom: none; }
+    .modal-row-key { font-size: 12px; color: var(--ink3); }
+    .modal-row-val { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; }
+    .modal-close {
+      margin-top: 24px; width: 100%;
+      padding: 12px; background: var(--ink); color: var(--bg);
+      border: none; border-radius: 99px; font-size: 13px; font-weight: 600;
+      font-family: 'DM Sans', sans-serif; cursor: pointer;
+      letter-spacing: 0.5px; text-transform: uppercase; transition: opacity 0.15s;
+    }
+    .modal-close:hover { opacity: 0.8; }
+
     /* ── RESPONSIVE ── */
     @media (max-width: 960px) {
       .card-grid { grid-template-columns: repeat(2, 1fr); }
@@ -285,15 +393,40 @@
         <svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 1v12M1 7h12"/></svg>
         Kelola Barang
       </a>
+      <div class="user-badge" id="userBadge">
+        <div class="user-badge-icon">
+          <svg viewBox="0 0 20 20" fill="white"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/></svg>
+        </div>
+        <span id="userBadgeName">admin</span>
+      </div>
       <button class="btn-cta" onclick="logout()" style="background:transparent;color:var(--ink);margin-left:4px;">
         <svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 1H2a1 1 0 00-1 1v10a1 1 0 001 1h3M9 10l3-3-3-3M12 7H4"/></svg>
         Logout
       </button>
     </div>
-    <button class="hamburger" aria-label="Menu">
+    <!-- FIX #2: Hamburger fungsional -->
+    <button class="hamburger" aria-label="Menu" onclick="toggleMobileMenu()">
       <svg width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 4h14M2 9h14M2 14h14"/></svg>
     </button>
   </nav>
+
+  <!-- FIX #2: Mobile dropdown menu -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a class="btn-cta" href="tambah_barang.html">
+      <svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 1v12M1 7h12"/></svg>
+      Kelola Barang
+    </a>
+    <div class="user-badge" style="justify-content:center;">
+      <div class="user-badge-icon">
+        <svg viewBox="0 0 20 20" fill="white"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/></svg>
+      </div>
+      <span id="userBadgeNameMobile">admin</span>
+    </div>
+    <button class="btn-cta" onclick="logout()" style="background:transparent;color:var(--ink);">
+      <svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 1H2a1 1 0 00-1 1v10a1 1 0 001 1h3M9 10l3-3-3-3M12 7H4"/></svg>
+      Logout
+    </button>
+  </div>
 
   <!-- HERO -->
   <section class="hero">
@@ -338,26 +471,117 @@
   <!-- CARD GRID -->
   <section class="grid-section">
     <div class="card-grid" id="cardGrid">
-      <div class="empty-state">
-        <div class="empty-num">—</div>
-        <div class="empty-text">Memuat data...</div>
+      <!-- FIX #3: Skeleton loading menggantikan "Memuat data..." -->
+      <div class="skeleton-card">
+        <div class="sk-line" style="height:10px;width:35%;margin-bottom:18px;"></div>
+        <div class="sk-line" style="height:16px;width:75%;"></div>
+        <div class="sk-line" style="height:16px;width:55%;margin-bottom:18px;"></div>
+        <div class="sk-line" style="height:1px;width:100%;margin-bottom:14px;"></div>
+        <div class="sk-line" style="height:26px;width:50%;"></div>
+      </div>
+      <div class="skeleton-card">
+        <div class="sk-line" style="height:10px;width:35%;margin-bottom:18px;"></div>
+        <div class="sk-line" style="height:16px;width:80%;"></div>
+        <div class="sk-line" style="height:16px;width:60%;margin-bottom:18px;"></div>
+        <div class="sk-line" style="height:1px;width:100%;margin-bottom:14px;"></div>
+        <div class="sk-line" style="height:26px;width:45%;"></div>
+      </div>
+      <div class="skeleton-card">
+        <div class="sk-line" style="height:10px;width:35%;margin-bottom:18px;"></div>
+        <div class="sk-line" style="height:16px;width:70%;"></div>
+        <div class="sk-line" style="height:16px;width:50%;margin-bottom:18px;"></div>
+        <div class="sk-line" style="height:1px;width:100%;margin-bottom:14px;"></div>
+        <div class="sk-line" style="height:26px;width:55%;"></div>
       </div>
     </div>
   </section>
 
+  <!-- FIX #1: Modal detail barang -->
+  <div class="modal-overlay" id="modalOverlay" onclick="handleModalClick(event)">
+    <div class="modal-box">
+      <div class="modal-label">Detail Barang</div>
+      <div class="modal-name" id="modalName">—</div>
+      <div class="modal-row">
+        <span class="modal-row-key">Harga</span>
+        <span class="modal-row-val" id="modalHarga">—</span>
+      </div>
+      <div class="modal-row">
+        <span class="modal-row-key">Nomor Urut</span>
+        <span class="modal-row-val" id="modalNo">—</span>
+      </div>
+      <button class="modal-close" onclick="closeModal()">Tutup</button>
+    </div>
+  </div>
+
+  <!-- FIX #4: Toast notifikasi error/sukses -->
+  <div class="toast" id="toast">
+    <span id="toastIcon">⚠️</span>
+    <span id="toastMsg">Pesan</span>
+  </div>
+
   <script src="app.js"></script>
   <script>
-    // ── AUTH GUARD ──
-    const myToken = localStorage.getItem('token_toko');
-    if (!myToken) window.location.href = 'login.html';
+    // ── AUTH GUARD & USER BADGE ──
+    const _authToken = localStorage.getItem('token_toko');
+    if (!_authToken) window.location.href = 'login.html';
+
+    // Tampilkan username di badge
+    const savedUser = localStorage.getItem('username_toko');
+    if (savedUser) {
+      document.querySelectorAll('#userBadgeName, #userBadgeNameMobile')
+        .forEach(el => el.textContent = savedUser);
+    }
 
     function logout() {
       localStorage.removeItem('token_toko');
+      localStorage.removeItem('username_toko');
       window.location.href = 'login.html';
     }
 
+    function toggleMobileMenu() {
+      document.getElementById('mobileMenu').classList.toggle('open');
+    }
+    document.addEventListener('click', function(e) {
+      const menu = document.getElementById('mobileMenu');
+      const hamburger = document.querySelector('.hamburger');
+      if (menu.classList.contains('open') && !menu.contains(e.target) && !hamburger.contains(e.target)) {
+        menu.classList.remove('open');
+      }
+    });
+
+    // ── FIX #4: Toast notifikasi ──
+    let _toastTimer = null;
+    function showToast(msg, type) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastMsg').textContent = msg;
+      document.getElementById('toastIcon').textContent = type === 'success' ? '✓' : '⚠️';
+      toast.className = 'toast ' + (type || 'error');
+      toast.classList.add('show');
+      clearTimeout(_toastTimer);
+      _toastTimer = setTimeout(function() { toast.classList.remove('show'); }, 3500);
+    }
+
+    // ── FIX #1: Modal detail barang ──
+    function openModal(barang, no) {
+      document.getElementById('modalName').textContent = barang.nama_barang;
+      document.getElementById('modalHarga').textContent = 'Rp ' + Number(barang.harga).toLocaleString('id-ID');
+      document.getElementById('modalNo').textContent = '#' + String(no).padStart(3, '0');
+      document.getElementById('modalOverlay').classList.add('open');
+    }
+    function closeModal() {
+      document.getElementById('modalOverlay').classList.remove('open');
+    }
+    function handleModalClick(e) {
+      if (e.target === document.getElementById('modalOverlay')) closeModal();
+    }
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeModal();
+    });
+
+    // ── DATA ──
     const API = 'http://localhost:8080/platform/api-toko';
     let allBarang = [];
+
     function updateStats() {
       const prices = allBarang.map(r => Number(r.harga) || 0);
       const total  = allBarang.length;
@@ -368,8 +592,18 @@
       document.getElementById('statAvg').textContent   = total ? 'Rp ' + avg.toLocaleString('id-ID') : '—';
     }
 
+    // ── FIX #5: Escape HTML untuk cegah XSS ──
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
     function renderCards(keyword) {
-      const q = (keyword||'').trim().toLowerCase();
+      const q = (keyword || '').trim().toLowerCase();
       document.getElementById('searchClear').className = q ? 'search-clear show' : 'search-clear';
 
       let list = allBarang;
@@ -379,32 +613,35 @@
       const grid = document.getElementById('cardGrid');
 
       if (!list.length) {
-        grid.innerHTML = `<div class="empty-state"><div class="empty-num">${q?'?':'0'}</div><div class="empty-text">${q?`"${keyword}" tidak ditemukan.`:'Belum ada barang.'}</div></div>`;
+        // FIX #5: keyword di-escape sebelum dirender
+        const safeKw = escapeHtml(keyword);
+        grid.innerHTML = '<div class="empty-state"><div class="empty-num">' + (q ? '?' : '0') + '</div><div class="empty-text">' + (q ? '"' + safeKw + '" tidak ditemukan.' : 'Belum ada barang.') + '</div></div>';
         return;
       }
 
+      // FIX #5: hl() pakai teks yang sudah di-escape dulu, baru replace highlight
       function hl(text) {
-        if (!q) return text;
-        return text.replace(new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi'), '<span class="highlight">$1</span>');
+        const safe = escapeHtml(text);
+        if (!q) return safe;
+        const safeQ = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        return safe.replace(new RegExp('(' + safeQ + ')', 'gi'), '<span class="highlight">$1</span>');
       }
 
-      grid.innerHTML = list.map((b, i) => {
+      grid.innerHTML = list.map(function(b, i) {
         const delay = Math.min(i * 40, 400);
-        return `
-          <div class="item-card" style="animation-delay:${delay}ms">
-            <div class="ic-header">
-              <span class="ic-num">#${String(i+1).padStart(3,'0')}</span>
-            </div>
-            <div class="ic-name">${hl(b.nama_barang)}</div>
-            <hr class="ic-divider">
-            <div class="ic-price-block">
-              <div>
-                <div class="ic-price-label">Harga</div>
-                <div class="ic-price">Rp ${Number(b.harga).toLocaleString('id-ID')}</div>
-              </div>
-              <button class="ic-arrow">→</button>
-            </div>
-          </div>`;
+        return '<div class="item-card" style="animation-delay:' + delay + 'ms">' +
+          '<div class="ic-header"><span class="ic-num">#' + String(i+1).padStart(3,'0') + '</span></div>' +
+          '<div class="ic-name">' + hl(b.nama_barang) + '</div>' +
+          '<hr class="ic-divider">' +
+          '<div class="ic-price-block">' +
+            '<div>' +
+              '<div class="ic-price-label">Harga</div>' +
+              '<div class="ic-price">Rp ' + Number(b.harga).toLocaleString('id-ID') + '</div>' +
+            '</div>' +
+            // FIX #1: tombol panah sekarang membuka modal detail
+            '<button class="ic-arrow" onclick="openModal(allBarang[' + i + '],' + (i+1) + ')" title="Lihat detail">→</button>' +
+          '</div>' +
+        '</div>';
       }).join('');
     }
 
@@ -414,10 +651,27 @@
       renderCards(document.getElementById('searchInput').value || '');
     }
 
-    function clearSearch() { document.getElementById('searchInput').value = ''; renderCards(''); }
-    document.getElementById('searchInput').addEventListener('input', function(){ renderCards(this.value); });
+    function clearSearch() {
+      document.getElementById('searchInput').value = '';
+      renderCards('');
+    }
+    document.getElementById('searchInput').addEventListener('input', function() {
+      renderCards(this.value);
+    });
 
-    if (typeof ambilDataBarang !== 'undefined') ambilDataBarang();
+    // FIX #3 & #4: Tangani jika app.js gagal load atau ambilDataBarang tidak ada
+    if (typeof ambilDataBarang !== 'undefined') {
+      try {
+        ambilDataBarang();
+      } catch (err) {
+        console.error('ambilDataBarang error:', err);
+        showToast('Gagal memuat data. Coba refresh halaman.', 'error');
+        document.getElementById('cardGrid').innerHTML = '<div class="empty-state"><div class="empty-num">!</div><div class="empty-text">Gagal memuat data. Periksa koneksi server.</div></div>';
+      }
+    } else {
+      showToast('app.js tidak dapat dimuat. Periksa konfigurasi server.', 'error');
+      document.getElementById('cardGrid').innerHTML = '<div class="empty-state"><div class="empty-num">!</div><div class="empty-text">File app.js tidak ditemukan atau gagal dimuat.</div></div>';
+    }
   </script>
 
   <script>

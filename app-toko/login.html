@@ -234,6 +234,7 @@
 
         if (data.status === 'success') {
           localStorage.setItem('token_toko', data.token);
+          localStorage.setItem('username_toko', username); // simpan username untuk badge
           showAlert('Login berhasil! Mengalihkan...', 'success');
           setTimeout(() => window.location.href = 'index.html', 800);
         } else {
