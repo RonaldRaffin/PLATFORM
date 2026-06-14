@@ -15,33 +15,35 @@ if ($token_dikirim === '' || mysqli_num_rows($cek_token) === 0) {
 }
 // ====================================================
 
-$json_data = file_get_contents('php://input');
-$data      = json_decode($json_data, true);
+$id    = (int) $_POST['id'];
+$nama  = mysqli_real_escape_string($koneksi, $_POST['nama_barang']);
+$harga = $_POST['harga'];
 
-if (isset($data['id']) && isset($data['nama_barang']) && isset($data['harga'])) {
+if (!$id || !$nama || !$harga) {
+    die(json_encode(["status" => "error", "pesan" => "Data tidak lengkap"]));
+}
 
-    $id    = (int) $data['id'];
-    $nama  = mysqli_real_escape_string($koneksi, $data['nama_barang']);
-    $harga = $data['harga'];
+if (isset($_FILES['gambar']) && $_FILES['gambar']['error'] === 0) {
+    $file_tmp       = $_FILES['gambar']['tmp_name'];
+    $nama_file_baru = time() . "_" . $_FILES['gambar']['name'];
 
-    $query = "UPDATE barang SET nama_barang='$nama', harga='$harga' WHERE id=$id";
-
-    if (mysqli_query($koneksi, $query)) {
-        echo json_encode([
-            "status" => "success",
-            "pesan"  => "Data berhasil diupdate"
-        ]);
-    } else {
-        echo json_encode([
-            "status" => "error",
-            "pesan"  => "Gagal mengupdate data"
-        ]);
+    $lama = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT gambar FROM barang WHERE id=$id"));
+    if ($lama['gambar']) {
+        $path_lama = "uploads/" . $lama['gambar'];
+        if (file_exists($path_lama)) {
+            unlink($path_lama);
+        }
     }
 
+    move_uploaded_file($file_tmp, "uploads/" . $nama_file_baru);
+    $query = "UPDATE barang SET nama_barang='$nama', harga='$harga', gambar='$nama_file_baru' WHERE id=$id";
 } else {
-    echo json_encode([
-        "status" => "error",
-        "pesan"  => "Data tidak lengkap"
-    ]);
+    $query = "UPDATE barang SET nama_barang='$nama', harga='$harga' WHERE id=$id";
+}
+
+if (mysqli_query($koneksi, $query)) {
+    echo json_encode(["status" => "success", "pesan" => "Data berhasil diupdate"]);
+} else {
+    echo json_encode(["status" => "error", "pesan" => "Gagal mengupdate data"]);
 }
 ?>

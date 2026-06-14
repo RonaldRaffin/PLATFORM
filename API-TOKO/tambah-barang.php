@@ -15,32 +15,28 @@ if ($token_dikirim === '' || mysqli_num_rows($cek_token) === 0) {
 }
 // ====================================================
 
-$json_data = file_get_contents('php://input');
-$data      = json_decode($json_data, true);
+// 1. Tangkap Teks Biasa
+$nama  = mysqli_real_escape_string($koneksi, $_POST['nama_barang']);
+$harga = mysqli_real_escape_string($koneksi, $_POST['harga']);
+$nama_file_baru = ""; // Default kosong jika tidak ada gambar
 
-if (isset($data['nama_barang']) && isset($data['harga'])) {
+// 2. Cek Apakah ada file gambar yang diupload
+if (isset($_FILES['gambar']) && $_FILES['gambar']['error'] === 0) {
+    $file_tmp = $_FILES['gambar']['tmp_name'];
 
-    $nama  = mysqli_real_escape_string($koneksi, $data['nama_barang']);
-    $harga = $data['harga'];
+    // Tambahkan fungsi time() agar nama file unik dan tidak tertimpa
+    $nama_file_baru = time() . "_" . $_FILES['gambar']['name'];
 
-    $query = "INSERT INTO barang (nama_barang, harga) VALUES ('$nama', '$harga')";
+    // Pindahkan file dari temporary ke folder uploads/
+    move_uploaded_file($file_tmp, "uploads/" . $nama_file_baru);
+}
 
-    if (mysqli_query($koneksi, $query)) {
-        echo json_encode([
-            "status" => "success",
-            "pesan"  => "Data berhasil ditambahkan"
-        ]);
-    } else {
-        echo json_encode([
-            "status" => "error",
-            "pesan"  => "Gagal menambahkan data"
-        ]);
-    }
+// 3. Masukkan ke Database
+$query = "INSERT INTO barang (nama_barang, harga, gambar) VALUES ('$nama', '$harga', '$nama_file_baru')";
 
+if (mysqli_query($koneksi, $query)) {
+    echo json_encode(["status" => "success", "pesan" => "Barang & Gambar disimpan!"]);
 } else {
-    echo json_encode([
-        "status" => "error",
-        "pesan"  => "Data tidak lengkap"
-    ]);
+    echo json_encode(["status" => "error", "pesan" => "Gagal simpan ke DB"]);
 }
 ?>

@@ -20,7 +20,23 @@ $data      = json_decode($json_data, true);
 
 if (isset($data['id'])) {
 
-    $id    = (int) $data['id'];
+    $id = (int) $data['id'];
+
+    // Ambil nama file gambar dulu sebelum dihapus
+    $cek = mysqli_query($koneksi, "SELECT gambar FROM barang WHERE id=$id");
+    if ($row = mysqli_fetch_assoc($cek)) {
+        $namaGambar = $row['gambar'];
+
+        // Hapus file foto jika ada
+        if (!empty($namaGambar)) {
+            $pathGambar = __DIR__ . '/uploads/' . $namaGambar;
+            if (file_exists($pathGambar)) {
+                unlink($pathGambar);
+            }
+        }
+    }
+
+    // Hapus dari database
     $query = "DELETE FROM barang WHERE id=$id";
 
     if (mysqli_query($koneksi, $query)) {

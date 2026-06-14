@@ -1,74 +1,265 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TokoKu — Kelola Barang</title>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <title>FinStore — Kelola Barang</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     :root {
-      --bg:        #ffffff;
-      --bg2:       #f5f5f5;
-      --bg3:       #efefef;
-      --ink:       #0a0a0a;
-      --ink2:      #2a2a2a;
-      --ink3:      #777777;
-      --ink4:      #c8c8c8;
-      --border:    #0a0a0a;
+      --bg: #ffffff;
+      --bg2: #f5f5f5;
+      --bg3: #efefef;
+      --ink: #0a0a0a;
+      --ink2: #2a2a2a;
+      --ink3: #777777;
+      --ink4: #c8c8c8;
+      --border: #0a0a0a;
       --border-lt: #e4e4e4;
-      --green:     #16a34a;
-      --green-bg:  #f0fdf4;
-      --red:       #dc2626;
-      --red-bg:    #fef2f2;
-      --yellow:    #d97706;
+      --green: #16a34a;
+      --green-bg: #f0fdf4;
+      --red: #dc2626;
+      --red-bg: #fef2f2;
+      --yellow: #d97706;
       --yellow-bg: #fffbeb;
     }
 
-    body { background: var(--bg2); color: var(--ink); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+    body {
+      background: var(--bg2);
+      color: var(--ink);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+    }
 
     /* ── TOPNAV ── */
     .topnav {
-      position: sticky; top: 0; z-index: 100;
-      background: var(--bg); border-bottom: 1.5px solid var(--border-lt);
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 48px; height: 64px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--bg);
+      border-bottom: 1.5px solid var(--border-lt);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 48px;
+      height: 64px;
     }
-    .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-    .brand-mark {
-      width: 34px; height: 34px; background: var(--ink);
-      border-radius: 8px;
-      display: flex; align-items: center; justify-content: center;
+
+    /* ── BRAND WORDMARK ── */
+    .brand {
+      display: inline-flex;
+      flex-direction: column;
+      gap: 4px;
+      text-decoration: none;
+      line-height: 1;
     }
-    .brand-mark svg { width: 17px; height: 17px; }
-    .brand-name { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 3px; color: var(--ink); line-height: 1; }
-    .nav-links { display: flex; align-items: center; gap: 6px; }
+
+    .brand-text {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px;
+      letter-spacing: 3px;
+      line-height: 1;
+    }
+
+    .brand-text .fin { color: var(--ink); }
+    .brand-text .store { color: rgba(10,10,10,0.25); }
+
+    .brand-line { display: flex; gap: 3px; align-items: center; }
+    .brand-line-solid { height: 2px; width: 24px; background: var(--ink); border-radius: 99px; }
+    .brand-line-dot { width: 4px; height: 4px; background: rgba(10,10,10,0.2); border-radius: 50%; }
+    .brand-line-thin { height: 2px; width: 36px; background: rgba(10,10,10,0.08); border-radius: 99px; }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-divider { width: 1px; height: 22px; background: var(--border-lt); }
+
     .btn-back {
-      padding: 8px 18px; font-size: 12px; font-weight: 600; letter-spacing: 0.5px;
-      text-transform: uppercase; text-decoration: none; color: var(--ink3);
-      border: 1.5px solid var(--border-lt); border-radius: 99px;
-      transition: all 0.15s; font-family: 'DM Sans', sans-serif;
-      display: inline-flex; align-items: center; gap: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 18px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: var(--ink3);
+      border: 1.5px solid var(--border-lt);
+      border-radius: 99px;
+      transition: all 0.15s;
+      font-family: 'DM Sans', sans-serif;
+      background: transparent;
+      cursor: pointer;
     }
-    .btn-back:hover { color: var(--ink); border-color: var(--ink); }
+
+    .btn-back:hover {
+      color: var(--ink);
+      border-color: var(--ink);
+    }
+
+    /* ── USER MENU ── */
+    .user-menu-wrap { position: relative; }
+
+    .user-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px 6px 6px;
+      border: 1.5px solid var(--border-lt);
+      border-radius: 99px;
+      background: var(--bg2);
+      cursor: pointer;
+      transition: all 0.15s;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    .user-badge:hover, .user-badge.open {
+      border-color: var(--ink);
+      background: var(--bg);
+    }
+
+    .user-badge-icon {
+      width: 26px;
+      height: 26px;
+      background: var(--ink);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .user-badge-name {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--ink2);
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .user-chevron { transition: transform 0.2s ease; color: var(--ink4); }
+    .user-badge.open .user-chevron { transform: rotate(180deg); }
+
+    .user-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      background: var(--bg);
+      border: 1.5px solid var(--border-lt);
+      border-radius: 14px;
+      padding: 6px;
+      min-width: 180px;
+      box-shadow: 0 12px 32px rgba(0,0,0,0.10);
+      z-index: 150;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .user-menu-wrap.open .user-dropdown { display: flex; }
+
+    .user-info {
+      padding: 10px 12px 12px;
+      border-bottom: 1px solid var(--border-lt);
+      margin-bottom: 4px;
+    }
+
+    .user-info-name { font-size: 13px; font-weight: 700; color: var(--ink); font-family: 'DM Sans', sans-serif; }
+    .user-info-role { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 1.5px; color: var(--ink4); text-transform: uppercase; margin-top: 2px; }
+
+    .user-drop-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 12px;
+      font-size: 12.5px;
+      font-weight: 500;
+      font-family: 'DM Sans', sans-serif;
+      color: var(--ink3);
+      background: transparent;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.12s;
+      width: 100%;
+    }
+
+    .user-drop-item:hover { background: var(--bg2); color: var(--ink); }
+    .user-drop-item.danger { color: var(--red); }
+    .user-drop-item.danger:hover { background: #fff0f0; }
 
     /* ── HERO ── */
     .hero {
       background: var(--bg);
       border-bottom: 1.5px solid var(--border-lt);
       padding: 48px 48px 40px;
-      display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
     }
+
     .hero-eyebrow {
-      display: inline-flex; align-items: center; gap: 8px;
-      font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 2px;
-      text-transform: uppercase; color: var(--ink3); margin-bottom: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--ink3);
+      margin-bottom: 14px;
     }
-    .hero-eyebrow::before { content: ''; display: block; width: 18px; height: 1.5px; background: var(--ink4); }
-    .hero-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(44px, 6vw, 80px); line-height: 0.88; letter-spacing: 2px; }
-    .hero-title em { font-style: normal; -webkit-text-stroke: 2px var(--ink); color: transparent; }
-    .hero-sub { margin-top: 14px; font-size: 13px; color: var(--ink3); line-height: 1.6; max-width: 300px; }
+
+    .hero-eyebrow::before {
+      content: '';
+      display: block;
+      width: 18px;
+      height: 1.5px;
+      background: var(--ink4);
+    }
+
+    .hero-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(44px, 6vw, 80px);
+      line-height: 0.88;
+      letter-spacing: 2px;
+    }
+
+    .hero-title em {
+      font-style: normal;
+      -webkit-text-stroke: 2px var(--ink);
+      color: transparent;
+    }
+
+    .hero-sub {
+      margin-top: 14px;
+      font-size: 13px;
+      color: var(--ink3);
+      line-height: 1.6;
+      max-width: 300px;
+    }
 
     /* ── BODY LAYOUT ── */
     .body-wrap {
@@ -89,83 +280,203 @@
 
     .panel-label {
       font-family: 'DM Mono', monospace;
-      font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
-      color: var(--ink4); margin-bottom: 20px;
-      display: flex; align-items: center; gap: 10px;
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--ink4);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
-    .panel-label::after { content: ''; flex: 1; height: 1px; background: var(--border-lt); }
+
+    .panel-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border-lt);
+    }
 
     .mode-indicator {
-      display: flex; align-items: center; gap: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
       padding: 10px 14px;
       background: var(--bg2);
       border: 1.5px solid var(--border-lt);
       border-radius: 10px;
       margin-bottom: 22px;
-      font-size: 12.5px; font-weight: 600; color: var(--ink2);
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--ink2);
     }
-    .mode-dot { width: 8px; height: 8px; background: var(--ink); border-radius: 50%; flex-shrink: 0; }
+
+    .mode-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--ink);
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
     .mode-dot.edit { background: var(--yellow); }
 
-    .field { display: flex; flex-direction: column; gap: 7px; margin-bottom: 14px; }
-    .field label {
-      font-family: 'DM Mono', monospace; font-size: 10px;
-      color: var(--ink4); letter-spacing: 1.5px; text-transform: uppercase;
-      display: flex; align-items: center; gap: 6px;
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      margin-bottom: 14px;
     }
-    .field label::before { content: ''; width: 4px; height: 4px; background: var(--ink); border-radius: 50%; display: block; }
-    .field input {
+
+    .field label {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: var(--ink4);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .field label::before {
+      content: '';
+      width: 4px;
+      height: 4px;
+      background: var(--ink);
+      border-radius: 50%;
+      display: block;
+    }
+
+    .field input[type="text"],
+    .field input[type="number"] {
       border: 1.5px solid var(--border-lt);
       border-radius: 10px;
       padding: 11px 14px;
-      font-size: 13.5px; color: var(--ink);
+      font-size: 13.5px;
+      color: var(--ink);
       font-family: 'DM Sans', sans-serif;
-      outline: none; transition: border-color 0.15s, box-shadow 0.15s;
-      background: var(--bg); width: 100%;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      background: var(--bg);
+      width: 100%;
     }
-    .field input:focus {
+
+    .field input[type="text"]:focus,
+    .field input[type="number"]:focus {
       border-color: var(--ink);
-      box-shadow: 0 0 0 3px rgba(10,10,10,0.06);
+      box-shadow: 0 0 0 3px rgba(10, 10, 10, 0.06);
     }
+
     .field input::placeholder { color: var(--ink4); }
 
+    .field input[type="file"] {
+      border: 1.5px dashed var(--border-lt);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 12.5px;
+      color: var(--ink3);
+      font-family: 'DM Sans', sans-serif;
+      outline: none;
+      transition: border-color 0.15s;
+      background: var(--bg2);
+      width: 100%;
+      cursor: pointer;
+    }
+
+    .field input[type="file"]:hover { border-color: var(--ink); }
+
+    .img-preview-wrap {
+      display: none;
+      margin-top: 8px;
+      border: 1.5px solid var(--border-lt);
+      border-radius: 10px;
+      overflow: hidden;
+      height: 120px;
+      background: var(--bg2);
+      align-items: center;
+      justify-content: center;
+    }
+
+    .img-preview-wrap.show { display: flex; }
+    .img-preview-wrap img { width: 100%; height: 100%; object-fit: cover; }
+
     .input-wrapper { position: relative; }
+
     .input-prefix {
-      position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
-      font-size: 13px; color: var(--ink3); pointer-events: none;
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 13px;
+      color: var(--ink3);
+      pointer-events: none;
       font-family: 'DM Mono', monospace;
     }
-    .input-wrapper input { padding-left: 40px; }
 
-    .form-btns { display: flex; flex-direction: column; gap: 8px; margin-top: 22px; }
+    .field .input-wrapper input[type="number"] { padding-left: 40px; }
+
+    .form-btns {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 22px;
+    }
 
     .btn-submit {
-      width: 100%; padding: 13px;
-      background: var(--ink); color: var(--bg);
-      font-size: 12px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase;
+      width: 100%;
+      padding: 13px;
+      background: var(--ink);
+      color: var(--bg);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
       font-family: 'DM Sans', sans-serif;
-      cursor: pointer; border: 1.5px solid var(--ink); border-radius: 99px;
-      transition: all 0.15s; display: flex; align-items: center; justify-content: center; gap: 7px;
+      cursor: pointer;
+      border: 1.5px solid var(--ink);
+      border-radius: 99px;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
     }
+
     .btn-submit:hover { background: transparent; color: var(--ink); }
+
     .btn-cancel {
-      width: 100%; padding: 12px;
-      background: transparent; color: var(--ink3);
-      font-size: 12px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase;
+      width: 100%;
+      padding: 12px;
+      background: transparent;
+      color: var(--ink3);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
       font-family: 'DM Sans', sans-serif;
-      cursor: pointer; border: 1.5px solid var(--border-lt); border-radius: 99px;
+      cursor: pointer;
+      border: 1.5px solid var(--border-lt);
+      border-radius: 99px;
       transition: all 0.15s;
     }
+
     .btn-cancel:hover { border-color: var(--ink); color: var(--ink); }
 
     .result-msg {
-      margin-top: 12px; padding: 10px 14px; font-size: 12.5px;
-      display: none; border: 1.5px solid; border-radius: 8px;
-      font-family: 'DM Mono', monospace; letter-spacing: 0.3px;
+      margin-top: 12px;
+      padding: 10px 14px;
+      font-size: 12.5px;
+      display: none;
+      border: 1.5px solid;
+      border-radius: 8px;
+      font-family: 'DM Mono', monospace;
+      letter-spacing: 0.3px;
     }
+
     .result-msg.show { display: block; }
     .result-msg.success { color: var(--green); border-color: var(--green); background: var(--green-bg); }
-    .result-msg.error   { color: var(--red);   border-color: var(--red);   background: var(--red-bg); }
+    .result-msg.error { color: var(--red); border-color: var(--red); background: var(--red-bg); }
 
     /* ── TABLE/CARD PANEL ── */
     .table-panel { padding: 0; }
@@ -174,72 +485,130 @@
       background: var(--bg);
       border-bottom: 1.5px solid var(--border-lt);
       padding: 16px 32px;
-      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
     }
-    .tp-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--ink4); display: flex; align-items: center; gap: 6px; }
-    .tp-label::before { content: ''; width: 5px; height: 5px; background: var(--ink); border-radius: 50%; display: block; }
+
+    .tp-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--ink4);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tp-label::before {
+      content: '';
+      width: 5px;
+      height: 5px;
+      background: var(--ink);
+      border-radius: 50%;
+      display: block;
+    }
+
     .tp-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+
     .count-txt { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--ink4); }
+
     .search-wrap {
-      display: flex; align-items: center; gap: 8px;
-      border: 1.5px solid var(--border-lt); border-radius: 99px;
-      padding: 7px 14px; background: var(--bg2); transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border: 1.5px solid var(--border-lt);
+      border-radius: 99px;
+      padding: 7px 14px;
+      background: var(--bg2);
+      transition: all 0.15s;
     }
+
     .search-wrap:focus-within { border-color: var(--ink); background: var(--bg); }
     .search-wrap svg { color: var(--ink4); flex-shrink: 0; }
+
     .search-wrap input {
-      border: none; outline: none; font-size: 12.5px;
-      font-family: 'DM Sans', sans-serif; color: var(--ink);
-      background: transparent; width: 130px;
+      border: none;
+      outline: none;
+      font-size: 12.5px;
+      font-family: 'DM Sans', sans-serif;
+      color: var(--ink);
+      background: transparent;
+      width: 130px;
     }
+
     .search-wrap input::placeholder { color: var(--ink4); }
+
     .search-clear { background: none; border: none; cursor: pointer; color: var(--ink3); font-size: 13px; padding: 0; display: none; }
     .search-clear.show { display: block; }
 
-    /* Card Grid */
     .tp-grid-wrap { padding: 24px 32px 56px; }
 
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(12px); }
-      to   { opacity: 1; transform: translateY(0); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
-    .mgmt-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 14px;
-    }
+    .mgmt-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
 
-    /* ── ITEM CARD (management) ── */
     .item-card {
       background: var(--bg);
       border: 1.5px solid var(--border-lt);
-      border-radius: 16px;
-      padding: 20px 20px 16px;
-      display: flex; flex-direction: column;
-      position: relative; overflow: hidden;
-      animation: fadeUp 0.35s ease both;
-      transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
-      cursor: default;
+      border-radius: 20px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+      transition: box-shadow 0.2s, transform 0.2s;
+      animation: fadeUp 0.4s ease both;
+      position: relative;
     }
-    .item-card::before {
-      content: '';
-      position: absolute; top: 0; left: 0; right: 0; height: 3px;
-      background: var(--ink);
-      transform: scaleX(0); transform-origin: left;
-      transition: transform 0.25s ease;
+
+    .item-card:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.10); transform: translateY(-3px); }
+
+    .ic-img-wrap {
+      position: relative;
+      width: 100%;
+      height: 180px;
+      min-height: 180px;
+      max-height: 180px;
+      background: var(--bg2);
+      flex-shrink: 0;
+      overflow: hidden;
     }
-    .item-card:hover { border-color: #b8b8b8; box-shadow: 0 4px 18px rgba(0,0,0,0.07); transform: translateY(-2px); }
-    .item-card:hover::before { transform: scaleX(1); }
 
-    .ic-header { display: flex; align-items: center; justify-content: flex-end; margin-bottom: 14px; }
-    .ic-num { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--ink4); letter-spacing: 1px; }
+    .ic-img {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      object-fit: contain;
+      object-position: center center;
+      display: block;
+      padding: 12px;
+    }
 
-    .ic-name { font-size: 13.5px; font-weight: 600; color: var(--ink); line-height: 1.4; margin-bottom: 16px; flex: 1; word-break: break-word; }
-    .ic-divider { border: none; border-top: 1px solid var(--border-lt); margin-bottom: 14px; }
+    .ic-num {
+      position: absolute;
+      top: 12px; right: 12px;
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: #fff;
+      background: rgba(10,10,10,0.55);
+      -webkit-backdrop-filter: blur(6px);
+      backdrop-filter: blur(6px);
+      padding: 3px 9px;
+      border-radius: 99px;
+      letter-spacing: 1px;
+    }
 
-    .ic-price-block { margin-bottom: 16px; }
-    .ic-price-label { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--ink4); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 3px; }
+    .ic-body { padding: 18px 18px 14px; display: flex; flex-direction: column; flex: 1; }
+
+    .ic-name { font-size: 13.5px; font-weight: 600; color: var(--ink); line-height: 1.4; margin-bottom: 12px; flex: 1; word-break: break-word; }
+
+    .ic-price-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .ic-price-label { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--ink4); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 2px; }
     .ic-price { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 0.5px; color: var(--ink); line-height: 1; }
 
     .ic-actions { display: flex; gap: 8px; }
@@ -249,8 +618,7 @@
       background: var(--yellow-bg); color: var(--yellow);
       font-size: 11px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;
       font-family: 'DM Sans', sans-serif;
-      cursor: pointer; border: 1.5px solid var(--yellow); border-radius: 99px;
-      transition: all 0.15s;
+      cursor: pointer; border: 1.5px solid var(--yellow); border-radius: 99px; transition: all 0.15s;
     }
     .btn-edit-card:hover { background: var(--yellow); color: var(--bg); }
 
@@ -259,65 +627,47 @@
       background: var(--red-bg); color: var(--red);
       font-size: 11px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;
       font-family: 'DM Sans', sans-serif;
-      cursor: pointer; border: 1.5px solid var(--red); border-radius: 99px;
-      transition: all 0.15s;
+      cursor: pointer; border: 1.5px solid var(--red); border-radius: 99px; transition: all 0.15s;
     }
     .btn-del-card:hover { background: var(--red); color: #fff; }
 
     .highlight { background: var(--ink); color: var(--bg); padding: 0 2px; border-radius: 2px; }
 
-    /* EMPTY */
-    .empty-state {
-      grid-column: 1 / -1; padding: 80px 24px; text-align: center;
-      border: 1.5px dashed var(--border-lt); border-radius: 16px;
-    }
+    .empty-state { grid-column: 1 / -1; padding: 80px 24px; text-align: center; border: 1.5px dashed var(--border-lt); border-radius: 16px; }
     .empty-num { font-family: 'Bebas Neue', sans-serif; font-size: 64px; color: var(--ink4); line-height: 1; margin-bottom: 8px; }
     .empty-text { font-size: 13px; color: var(--ink3); }
 
     /* ── MODAL ── */
     .modal-overlay {
-      position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.4);
       display: flex; align-items: center; justify-content: center;
-      z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.2s;
+      z-index: 1000;
+      opacity: 0; pointer-events: none; transition: opacity 0.2s;
     }
     .modal-overlay.open { opacity: 1; pointer-events: all; }
+
     .modal {
-      background: var(--bg); border: 1.5px solid var(--border-lt);
-      border-radius: 18px; padding: 32px;
-      width: 420px; max-width: 92vw;
+      background: var(--bg); border: 1.5px solid var(--border-lt); border-radius: 18px;
+      padding: 32px; width: 420px; max-width: 92vw;
       transform: translateY(14px); transition: transform 0.2s ease;
       box-shadow: 0 20px 60px rgba(0,0,0,0.12);
     }
     .modal-overlay.open .modal { transform: translateY(0); }
-    .modal-icon {
-      width: 44px; height: 44px; background: var(--red-bg); border-radius: 50%;
-      display: flex; align-items: center; justify-content: center; margin-bottom: 16px;
-    }
+
+    .modal-icon { width: 44px; height: 44px; background: var(--red-bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; }
     .modal-icon svg { color: var(--red); }
     .modal-title { font-family: 'Bebas Neue', sans-serif; font-size: 26px; letter-spacing: 1px; color: var(--ink); margin-bottom: 10px; }
     .modal-body { font-size: 13.5px; color: var(--ink3); line-height: 1.7; }
     .modal-body strong { color: var(--ink); font-weight: 600; }
-    .modal-warn {
-      margin-top: 14px; font-size: 12px; font-family: 'DM Mono', monospace;
-      color: var(--red); background: var(--red-bg);
-      border: 1.5px solid var(--red); border-radius: 8px; padding: 10px 14px;
-    }
+    .modal-warn { margin-top: 14px; font-size: 12px; font-family: 'DM Mono', monospace; color: var(--red); background: var(--red-bg); border: 1.5px solid var(--red); border-radius: 8px; padding: 10px 14px; }
+
     .modal-actions { display: flex; gap: 8px; margin-top: 24px; }
-    .modal-btn-cancel {
-      flex: 1; padding: 12px;
-      background: var(--bg2); color: var(--ink3);
-      font-size: 12px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;
-      font-family: 'DM Sans', sans-serif; cursor: pointer;
-      border: 1.5px solid var(--border-lt); border-radius: 99px; transition: all 0.15s;
-    }
+
+    .modal-btn-cancel { flex: 1; padding: 12px; background: var(--bg2); color: var(--ink3); font-size: 12px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; font-family: 'DM Sans', sans-serif; cursor: pointer; border: 1.5px solid var(--border-lt); border-radius: 99px; transition: all 0.15s; }
     .modal-btn-cancel:hover { border-color: var(--ink); color: var(--ink); background: var(--bg); }
-    .modal-btn-del {
-      flex: 1; padding: 12px;
-      background: var(--red); color: #fff;
-      font-size: 12px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;
-      font-family: 'DM Sans', sans-serif; cursor: pointer;
-      border: 1.5px solid var(--red); border-radius: 99px; transition: all 0.15s;
-    }
+
+    .modal-btn-del { flex: 1; padding: 12px; background: var(--red); color: #fff; font-size: 12px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; font-family: 'DM Sans', sans-serif; cursor: pointer; border: 1.5px solid var(--red); border-radius: 99px; transition: all 0.15s; }
     .modal-btn-del:hover { background: #b91c1c; border-color: #b91c1c; }
 
     /* ── TOAST ── */
@@ -340,6 +690,7 @@
       .form-panel { position: static; border-right: none; border-bottom: 1.5px solid var(--border-lt); }
       .topnav, .hero, .tp-toolbar, .tp-grid-wrap { padding-left: 24px; padding-right: 24px; }
     }
+
     @media (max-width: 600px) {
       .mgmt-grid { grid-template-columns: 1fr; }
       .tp-right { margin-left: 0; width: 100%; }
@@ -348,28 +699,56 @@
       .tp-toolbar { flex-wrap: wrap; }
       .hero { padding: 32px 24px 28px; }
       .hero-title { font-size: 44px; }
+      .topnav { padding: 0 20px; }
     }
   </style>
 </head>
+
 <body>
 
   <!-- TOPNAV -->
   <nav class="topnav">
     <a class="brand" href="index.html">
-      <div class="brand-mark">
-        <svg viewBox="0 0 20 20" fill="white"><path d="M2 4a2 2 0 012-2h12a2 2 0 012 2v1H2V4zm0 3h16v9a2 2 0 01-2 2H4a2 2 0 01-2-2V7zm5 3a1 1 0 000 2h6a1 1 0 000-2H7z"/></svg>
+      <span class="brand-text"><span class="fin">Fin</span><span class="store">Store</span></span>
+      <div class="brand-line">
+        <div class="brand-line-solid"></div>
+        <div class="brand-line-dot"></div>
+        <div class="brand-line-thin"></div>
       </div>
-      <span class="brand-name">TokoKu</span>
     </a>
+
     <div class="nav-links">
       <a class="btn-back" href="index.html">
-        <svg width="11" height="11" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2L4 6.5 8 11"/></svg>
+        <svg width="11" height="11" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M8 2L4 6.5 8 11"/>
+        </svg>
         Kembali
       </a>
-      <button class="btn-back" onclick="logout()" style="margin-left:4px;">
-        <svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 1H2a1 1 0 00-1 1v10a1 1 0 001 1h3M9 10l3-3-3-3M12 7H4"/></svg>
-        Logout
-      </button>
+
+      <div class="nav-divider"></div>
+
+      <div class="user-menu-wrap" id="userMenuWrap">
+        <div class="user-badge" id="userBadge" onclick="toggleUserDropdown(event)">
+          <div class="user-badge-icon" id="userInitial">AD</div>
+          <span class="user-badge-name" id="userBadgeName">admin</span>
+          <svg class="user-chevron" width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M2 3.5l3 3 3-3"/>
+          </svg>
+        </div>
+
+        <div class="user-dropdown">
+          <div class="user-info">
+            <div class="user-info-name" id="dropdownUserName">admin</div>
+            <div class="user-info-role">Administrator</div>
+          </div>
+          <button class="user-drop-item danger" onclick="logout()">
+            <svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M5 1H2a1 1 0 00-1 1v10a1 1 0 001 1h3M9 10l3-3-3-3M12 7H4"/>
+            </svg>
+            Logout
+          </button>
+        </div>
+      </div>
     </div>
   </nav>
 
@@ -409,9 +788,19 @@
         </div>
       </div>
 
+      <div class="field">
+        <label>Foto Barang</label>
+        <input type="file" id="input-gambar" accept="image/*" onchange="previewGambar(this)">
+        <div class="img-preview-wrap" id="imgPreviewWrap">
+          <img id="imgPreview" src="" alt="Preview">
+        </div>
+      </div>
+
       <div class="form-btns">
         <button class="btn-submit" onclick="submitForm()">
-          <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 1v12M1 7h12"/></svg>
+          <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M7 1v12M1 7h12"/>
+          </svg>
           <span id="btnLabel">Simpan Barang</span>
         </button>
         <button class="btn-cancel" id="btnCancel" onclick="resetForm()" style="display:none">Batal Edit</button>
@@ -427,7 +816,10 @@
         <div class="tp-right">
           <span class="count-txt" id="countTxt">0 item</span>
           <div class="search-wrap">
-            <svg width="13" height="13" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="6.5" cy="6.5" r="5"/><path d="M10.5 10.5l3 3"/></svg>
+            <svg width="13" height="13" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.8">
+              <circle cx="6.5" cy="6.5" r="5"/>
+              <path d="M10.5 10.5l3 3"/>
+            </svg>
             <input type="text" id="searchInput" placeholder="Cari...">
             <button class="search-clear" id="searchClear" onclick="clearSearch()">✕</button>
           </div>
@@ -449,7 +841,12 @@
   <div class="modal-overlay" id="modalHapus">
     <div class="modal">
       <div class="modal-icon">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <polyline points="3 6 5 6 21 6"/>
+          <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
+          <path d="M10 11v6M14 11v6"/>
+          <path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/>
+        </svg>
       </div>
       <div class="modal-title">Hapus Barang</div>
       <div class="modal-body">
@@ -465,7 +862,9 @@
 
   <!-- TOAST -->
   <div class="toast" id="toast">
-    <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 7l3.5 3.5L12 3"/></svg>
+    <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M2 7l3.5 3.5L12 3"/>
+    </svg>
     <span id="toastMsg"></span>
   </div>
 
@@ -476,69 +875,113 @@
     const myToken = localStorage.getItem('token_toko');
     if (!myToken) window.location.href = 'login.html';
 
+    // ── USER BADGE ──
+    const savedUser = localStorage.getItem('username_toko');
+    if (savedUser) {
+      document.querySelectorAll('#userBadgeName, #dropdownUserName')
+        .forEach(el => el.textContent = savedUser);
+      const initials = savedUser.substring(0, 2).toUpperCase();
+      const initialEl = document.getElementById('userInitial');
+      if (initialEl) initialEl.textContent = initials;
+    }
+
     function logout() {
       localStorage.removeItem('token_toko');
       localStorage.removeItem('username_toko');
       window.location.href = 'login.html';
     }
 
+    function toggleUserDropdown(e) {
+      e.stopPropagation();
+      const wrap = document.getElementById('userMenuWrap');
+      const badge = document.getElementById('userBadge');
+      wrap.classList.toggle('open');
+      badge.classList.toggle('open');
+    }
+
+    document.addEventListener('click', function (e) {
+      const wrap = document.getElementById('userMenuWrap');
+      const badge = document.getElementById('userBadge');
+      if (wrap && !wrap.contains(e.target)) {
+        wrap.classList.remove('open');
+        badge.classList.remove('open');
+      }
+    });
+
     let allBarang = [];
     let hapusId = null;
     let modeEdit = false;
 
-    function showToast(msg, type='success') {
+    function previewGambar(input) {
+      const wrap = document.getElementById('imgPreviewWrap');
+      const img = document.getElementById('imgPreview');
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function (e) { img.src = e.target.result; wrap.classList.add('show'); };
+        reader.readAsDataURL(input.files[0]);
+      } else { wrap.classList.remove('show'); }
+    }
+
+    function showToast(msg, type = 'success') {
       const t = document.getElementById('toast');
       document.getElementById('toastMsg').textContent = msg;
-      t.className = 'toast show' + (type==='error' ? ' error' : '');
+      t.className = 'toast show' + (type === 'error' ? ' error' : '');
       setTimeout(() => t.className = 'toast', 3000);
     }
 
     async function ambilData() {
       try {
-        const res  = await fetch(`${API}/get_barang.php`);
+        const res = await fetch(`${API}/get_barang.php`);
         const data = await res.json();
         if (data.status === 'success') {
           allBarang = data.data || [];
           renderCards(document.getElementById('searchInput').value || '');
         }
-      } catch(e) { console.error(e); }
+      } catch (e) { console.error(e); }
     }
 
     function renderCards(keyword) {
-      const q = (keyword||'').trim().toLowerCase();
+      const q = (keyword || '').trim().toLowerCase();
       document.getElementById('searchClear').className = q ? 'search-clear show' : 'search-clear';
-
       let list = q ? allBarang.filter(b => b.nama_barang.toLowerCase().includes(q)) : allBarang;
       document.getElementById('countTxt').textContent = list.length + ' item';
       const grid = document.getElementById('mgmtGrid');
 
       if (!list.length) {
-        grid.innerHTML = `<div class="empty-state"><div class="empty-num">${q?'?':'0'}</div><div class="empty-text">${q?`"${keyword}" tidak ditemukan.`:'Belum ada barang. Tambahkan via form kiri.'}</div></div>`;
+        grid.innerHTML = `<div class="empty-state"><div class="empty-num">${q ? '?' : '0'}</div><div class="empty-text">${q ? `"${keyword}" tidak ditemukan.` : 'Belum ada barang. Tambahkan via form kiri.'}</div></div>`;
         return;
       }
 
       function hl(text) {
         if (!q) return text;
-        return text.replace(new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi'), '<span class="highlight">$1</span>');
+        return text.replace(new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi'), '<span class="highlight">$1</span>');
       }
 
       grid.innerHTML = list.map((b, i) => {
         const safeName = b.nama_barang.replace(/'/g, "\\'");
-        const delay    = Math.min(i * 35, 300);
+        const delay = Math.min(i * 35, 300);
+        const urlGambar = b.gambar
+          ? `http://localhost:8080/platform/API-TOKO/uploads/${b.gambar}`
+          : `https://placehold.co/400x180/efefef/aaaaaa?text=No+Image`;
         return `
           <div class="item-card" style="animation-delay:${delay}ms">
-            <div class="ic-header">
-              <span class="ic-num">#${String(i+1).padStart(3,'0')}</span>
+            <div class="ic-img-wrap">
+              <img src="${urlGambar}" class="ic-img" alt="${safeName}"
+                onerror="this.src='https://placehold.co/400x180/efefef/aaaaaa?text=No+Image'">
+              <span class="ic-num">#${String(i + 1).padStart(3, '0')}</span>
             </div>
-            <div class="ic-name">${hl(b.nama_barang)}</div>
-            <hr class="ic-divider">
-            <div class="ic-price-block">
-              <div class="ic-price-label">Harga</div>
-              <div class="ic-price">Rp ${Number(b.harga).toLocaleString('id-ID')}</div>
-            </div>
-            <div class="ic-actions">
-              <button class="btn-edit-card" onclick="isiFormEdit(${b.id},'${safeName}',${b.harga})">Edit</button>
-              <button class="btn-del-card"  onclick="bukaModal(${b.id},'${safeName}')">Hapus</button>
+            <div class="ic-body">
+              <div class="ic-name">${hl(b.nama_barang)}</div>
+              <div class="ic-price-row">
+                <div>
+                  <div class="ic-price-label">Harga</div>
+                  <div class="ic-price">Rp ${Number(b.harga).toLocaleString('id-ID')}</div>
+                </div>
+              </div>
+              <div class="ic-actions">
+                <button class="btn-edit-card" onclick="isiFormEdit(${b.id},'${safeName}',${b.harga})">Edit</button>
+                <button class="btn-del-card" onclick="bukaModal(${b.id},'${safeName}')">Hapus</button>
+              </div>
             </div>
           </div>`;
       }).join('');
@@ -546,34 +989,38 @@
 
     function isiFormEdit(id, nama, harga) {
       modeEdit = true;
-      document.getElementById('editId').value   = id;
-      document.getElementById('nama').value     = nama;
-      document.getElementById('harga').value    = harga;
+      document.getElementById('editId').value = id;
+      document.getElementById('nama').value = nama;
+      document.getElementById('harga').value = harga;
       document.getElementById('modeText').textContent = 'Mode: Edit Barang';
-      document.getElementById('modeDot').className    = 'mode-dot edit';
+      document.getElementById('modeDot').className = 'mode-dot edit';
       document.getElementById('btnLabel').textContent = 'Simpan Perubahan';
       document.getElementById('btnCancel').style.display = 'block';
       document.getElementById('hasil').className = 'result-msg';
       document.getElementById('nama').focus();
-      document.getElementById('formPanel').scrollIntoView({ behavior:'smooth', block:'start' });
+      document.getElementById('formPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     function resetForm() {
       modeEdit = false;
-      document.getElementById('editId').value   = '';
-      document.getElementById('nama').value     = '';
-      document.getElementById('harga').value    = '';
+      document.getElementById('editId').value = '';
+      document.getElementById('nama').value = '';
+      document.getElementById('harga').value = '';
+      document.getElementById('input-gambar').value = '';
+      document.getElementById('imgPreviewWrap').classList.remove('show');
       document.getElementById('modeText').textContent = 'Mode: Tambah Baru';
-      document.getElementById('modeDot').className    = 'mode-dot';
+      document.getElementById('modeDot').className = 'mode-dot';
       document.getElementById('btnLabel').textContent = 'Simpan Barang';
       document.getElementById('btnCancel').style.display = 'none';
       document.getElementById('hasil').className = 'result-msg';
     }
 
     async function submitForm() {
-      const nama  = document.getElementById('nama').value.trim();
+      const nama = document.getElementById('nama').value.trim();
       const harga = document.getElementById('harga').value;
-      if (!nama)  { showToast('Nama barang tidak boleh kosong!', 'error'); return; }
+      const fileGambar = document.getElementById('input-gambar').files[0];
+
+      if (!nama) { showToast('Nama barang tidak boleh kosong!', 'error'); return; }
       if (!harga) { showToast('Harga tidak boleh kosong!', 'error'); return; }
 
       const hasil = document.getElementById('hasil');
@@ -581,25 +1028,42 @@
       if (modeEdit) {
         const id = document.getElementById('editId').value;
         try {
-          const res  = await fetch(`${API}/edit_barang.php`, { method:'POST', headers:{'Content-Type':'application/json','Authorization':myToken}, body: JSON.stringify({ id:parseInt(id), nama_barang:nama, harga }) });
+          const dataEdit = new FormData();
+          dataEdit.append('id', id);
+          dataEdit.append('nama_barang', nama);
+          dataEdit.append('harga', harga);
+          const fileGambar = document.getElementById('input-gambar').files[0];
+          if (fileGambar) dataEdit.append('gambar', fileGambar);
+          const res = await fetch(`${API}/edit_barang.php`, {
+            method: 'POST',
+            headers: { 'Authorization': myToken },
+            body: dataEdit
+          });
           const data = await res.json();
           if (data.status === 'success') { showToast('Barang berhasil diperbarui!'); resetForm(); ambilData(); }
           else showToast(data.pesan || 'Gagal.', 'error');
-        } catch(e) { showToast('Error koneksi API', 'error'); }
+        } catch (e) { showToast('Error koneksi API', 'error'); }
       } else {
+        const dataKirim = new FormData();
+        dataKirim.append('nama_barang', nama);
+        dataKirim.append('harga', harga);
+        if (fileGambar) dataKirim.append('gambar', fileGambar);
         try {
-          const res  = await fetch(`${API}/tambah-barang.php`, { method:'POST', headers:{'Content-Type':'application/json','Authorization':myToken}, body: JSON.stringify({ nama_barang:nama, harga }) });
+          const res = await fetch(`${API}/tambah-barang.php`, {
+            method: 'POST',
+            headers: { 'Authorization': myToken },
+            body: dataKirim
+          });
           const data = await res.json();
           hasil.textContent = data.pesan;
-          hasil.className = 'result-msg show ' + (data.status==='success' ? 'success' : 'error');
+          hasil.className = 'result-msg show ' + (data.status === 'success' ? 'success' : 'error');
           if (data.status === 'success') {
             showToast('Barang berhasil ditambahkan!');
-            document.getElementById('nama').value  = '';
-            document.getElementById('harga').value = '';
+            resetForm();
             ambilData();
             setTimeout(() => hasil.className = 'result-msg', 3000);
           }
-        } catch(e) { hasil.textContent = 'Error koneksi.'; hasil.className = 'result-msg show error'; }
+        } catch (e) { hasil.textContent = 'Error koneksi.'; hasil.className = 'result-msg show error'; }
       }
     }
 
@@ -609,26 +1073,31 @@
       document.getElementById('modalHapus').classList.add('open');
     }
     function tutupModal() { hapusId = null; document.getElementById('modalHapus').classList.remove('open'); }
+
     async function konfirmasiHapus() {
       if (!hapusId) return;
       try {
-        const res  = await fetch(`${API}/hapus_barang.php`, { method:'POST', headers:{'Content-Type':'application/json','Authorization':myToken}, body: JSON.stringify({ id:hapusId }) });
+        const res = await fetch(`${API}/hapus_barang.php`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': myToken },
+          body: JSON.stringify({ id: hapusId })
+        });
         const data = await res.json();
-        showToast(data.pesan, data.status==='success' ? 'success' : 'error');
+        showToast(data.pesan, data.status === 'success' ? 'success' : 'error');
         if (data.status === 'success') {
           tutupModal();
           if (String(document.getElementById('editId').value) === String(hapusId)) resetForm();
           ambilData();
         }
-      } catch(e) { showToast('Error koneksi API', 'error'); }
+      } catch (e) { showToast('Error koneksi API', 'error'); }
     }
 
-    document.getElementById('modalHapus').addEventListener('click', function(e) {
+    document.getElementById('modalHapus').addEventListener('click', function (e) {
       if (e.target === this) tutupModal();
     });
 
-    function clearSearch() { document.getElementById('searchInput').value=''; renderCards(''); }
-    document.getElementById('searchInput').addEventListener('input', function(){ renderCards(this.value); });
+    function clearSearch() { document.getElementById('searchInput').value = ''; renderCards(''); }
+    document.getElementById('searchInput').addEventListener('input', function () { renderCards(this.value); });
 
     ambilData();
   </script>

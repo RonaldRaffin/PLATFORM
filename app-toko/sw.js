@@ -1,4 +1,5 @@
-const CACHE_NAME = 'toko-pwa-v4';
+const CACHE_NAME = 'toko-pwa-v5';
+
 const urlsToCache = [
   './',
   './index.html',
@@ -12,6 +13,7 @@ const urlsToCache = [
 // ==============================
 self.addEventListener('install', event => {
   self.skipWaiting();
+
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => cache.addAll(urlsToCache))
@@ -19,48 +21,89 @@ self.addEventListener('install', event => {
 });
 
 // ==============================
-// ACTIVATE (hapus cache lama)
+// ACTIVATE
+// Hapus cache lama
 // ==============================
 self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then(names => {
-      return Promise.all(
-        names.map(name => {
-          if (name !== CACHE_NAME) {
-            return caches.delete(name);
+    caches.keys().then(cacheNames =>
+      Promise.all(
+        cacheNames.map(cacheName => {
+          if (cacheName !== CACHE_NAME) {
+            return caches.delete(cacheName);
           }
         })
-      );
-    }).then(() => self.clients.claim())
+      )
+    ).then(() => self.clients.claim())
   );
 });
 
 // ==============================
-// FETCH — Network First
-// Selalu ambil dari server dulu.
-// Kalau offline/gagal, baru pakai cache.
+// FETCH
+// Network First Strategy
 // ==============================
 self.addEventListener('fetch', event => {
-  const url = event.request.url.toLowerCase();
 
-  // Skip semua request ke API (PHP) — jangan pernah di-cache
-  if (url.includes('/api-toko/') || url.includes('.php')) {
+  const request = event.request;
+  const url = request.url;
+
+  // Hanya handle GET request
+  if (request.method !== 'GET') {
+    return;
+  }
+
+  // Skip request extension browser
+  if (
+    url.startsWith('chrome-extension://') ||
+    url.startsWith('moz-extension://') ||
+    url.startsWith('edge-extension://')
+  ) {
+    return;
+  }
+
+  // Skip API / PHP
+  if (
+    url.includes('/api-toko/') ||
+    url.includes('.php')
+  ) {
     return;
   }
 
   event.respondWith(
-    fetch(event.request)
+    fetch(request)
       .then(networkResponse => {
-        // Berhasil ambil dari network → update cache sekalian
-        const responseClone = networkResponse.clone();
-        caches.open(CACHE_NAME).then(cache => {
-          cache.put(event.request, responseClone);
-        });
+
+        // Jangan cache response error
+        if (
+          networkResponse &&
+          networkResponse.status === 200 &&
+          networkResponse.type === 'basic'
+        ) {
+          const responseClone = networkResponse.clone();
+
+          caches.open(CACHE_NAME)
+            .then(cache => {
+              cache.put(request, responseClone);
+            })
+            .catch(err => {
+              console.warn('Cache gagal:', err);
+            });
+        }
+
         return networkResponse;
       })
       .catch(() => {
-        // Gagal (offline) → pakai cache sebagai fallback
-        return caches.match(event.request);
+        return caches.match(request)
+          .then(cachedResponse => {
+            if (cachedResponse) {
+              return cachedResponse;
+            }
+
+            // fallback jika file tidak ada di cache
+            if (request.mode === 'navigate') {
+              return caches.match('./index.html');
+            }
+          });
       })
   );
 });
