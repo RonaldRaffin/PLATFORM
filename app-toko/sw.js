@@ -1,4 +1,4 @@
-const CACHE_NAME = 'toko-pwa-v5';
+const CACHE_NAME = 'toko-pwa-v6';
 
 const urlsToCache = [
   './',

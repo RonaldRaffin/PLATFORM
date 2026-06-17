@@ -5,6 +5,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FinStore — Kelola Barang</title>
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%230a0a0a%22/><text x=%2250%22 y=%2266%22 font-size=%2240%22 font-family=%22Arial,sans-serif%22 font-weight=%22900%22 fill=%22white%22 text-anchor=%22middle%22>FS</text></svg>">
   <link
     href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap"
     rel="stylesheet">
@@ -370,29 +372,45 @@
 
     .field input::placeholder { color: var(--ink4); }
 
-    .field input[type="file"] {
+    .dropzone {
+      position: relative;
       border: 1.5px dashed var(--border-lt);
-      border-radius: 10px;
-      padding: 10px 14px;
-      font-size: 12.5px;
-      color: var(--ink3);
-      font-family: 'DM Sans', sans-serif;
-      outline: none;
-      transition: border-color 0.15s;
+      border-radius: 12px;
       background: var(--bg2);
-      width: 100%;
       cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      overflow: hidden;
     }
 
-    .field input[type="file"]:hover { border-color: var(--ink); }
+    .dropzone:hover { border-color: var(--ink4); }
+
+    .dropzone.dragover {
+      border-color: var(--ink);
+      background: var(--bg3);
+    }
+
+    .dropzone input[type="file"] { display: none; }
+
+    .dropzone-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 26px 14px;
+      text-align: center;
+    }
+
+    .dropzone-content svg { color: var(--ink4); transition: color 0.15s; }
+    .dropzone.dragover .dropzone-content svg { color: var(--ink); }
+
+    .dropzone-text { font-size: 12px; font-weight: 600; color: var(--ink2); }
+    .dropzone-sub { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--ink4); letter-spacing: 0.3px; }
 
     .img-preview-wrap {
       display: none;
-      margin-top: 8px;
-      border: 1.5px solid var(--border-lt);
-      border-radius: 10px;
-      overflow: hidden;
-      height: 120px;
+      position: relative;
+      height: 140px;
       background: var(--bg2);
       align-items: center;
       justify-content: center;
@@ -400,6 +418,28 @@
 
     .img-preview-wrap.show { display: flex; }
     .img-preview-wrap img { width: 100%; height: 100%; object-fit: cover; }
+
+    .img-remove-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: rgba(10,10,10,0.6);
+      -webkit-backdrop-filter: blur(4px);
+      backdrop-filter: blur(4px);
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s;
+    }
+
+    .img-remove-btn:hover { background: rgba(220,38,38,0.85); }
 
     .input-wrapper { position: relative; }
 
@@ -790,9 +830,20 @@
 
       <div class="field">
         <label>Foto Barang</label>
-        <input type="file" id="input-gambar" accept="image/*" onchange="previewGambar(this)">
-        <div class="img-preview-wrap" id="imgPreviewWrap">
-          <img id="imgPreview" src="" alt="Preview">
+        <div class="dropzone" id="dropzone">
+          <input type="file" id="input-gambar" accept="image/*" onchange="previewGambar(this)">
+          <div class="dropzone-content" id="dropzoneContent">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 16V4M12 4l-4 4M12 4l4 4"/>
+              <path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2"/>
+            </svg>
+            <div class="dropzone-text">Klik atau tarik gambar ke sini</div>
+            <div class="dropzone-sub">PNG / JPG, maks 5MB</div>
+          </div>
+          <div class="img-preview-wrap" id="imgPreviewWrap">
+            <img id="imgPreview" src="" alt="Preview">
+            <button type="button" class="img-remove-btn" onclick="removeGambar(event)">✕</button>
+          </div>
         </div>
       </div>
 
@@ -914,13 +965,69 @@
 
     function previewGambar(input) {
       const wrap = document.getElementById('imgPreviewWrap');
+      const content = document.getElementById('dropzoneContent');
       const img = document.getElementById('imgPreview');
       if (input.files && input.files[0]) {
         const reader = new FileReader();
-        reader.onload = function (e) { img.src = e.target.result; wrap.classList.add('show'); };
+        reader.onload = function (e) {
+          img.src = e.target.result;
+          wrap.classList.add('show');
+          content.style.display = 'none';
+        };
         reader.readAsDataURL(input.files[0]);
-      } else { wrap.classList.remove('show'); }
+      } else {
+        wrap.classList.remove('show');
+        content.style.display = 'flex';
+      }
     }
+
+    function removeGambar(e) {
+      e.stopPropagation();
+      const inputGambar = document.getElementById('input-gambar');
+      inputGambar.value = '';
+      previewGambar(inputGambar);
+    }
+
+    function setupDropzone() {
+      const dropzone = document.getElementById('dropzone');
+      const inputGambar = document.getElementById('input-gambar');
+
+      dropzone.addEventListener('click', function (e) {
+        if (e.target.closest('.img-remove-btn')) return;
+        inputGambar.click();
+      });
+
+      ['dragenter', 'dragover'].forEach(evt => {
+        dropzone.addEventListener(evt, function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          dropzone.classList.add('dragover');
+        });
+      });
+
+      ['dragleave', 'drop'].forEach(evt => {
+        dropzone.addEventListener(evt, function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          dropzone.classList.remove('dragover');
+        });
+      });
+
+      dropzone.addEventListener('drop', function (e) {
+        const files = e.dataTransfer.files;
+        if (files && files.length) {
+          const file = files[0];
+          if (!file.type.startsWith('image/')) {
+            showToast('File harus berupa gambar!', 'error');
+            return;
+          }
+          inputGambar.files = files;
+          previewGambar(inputGambar);
+        }
+      });
+    }
+
+    setupDropzone();
 
     function showToast(msg, type = 'success') {
       const t = document.getElementById('toast');
@@ -931,7 +1038,7 @@
 
     async function ambilData() {
       try {
-        const res = await fetch(`${API}/get_barang.php`);
+        const res = await fetch(`${API}/get_barang.php?all=1`);
         const data = await res.json();
         if (data.status === 'success') {
           allBarang = data.data || [];
@@ -1008,6 +1115,7 @@
       document.getElementById('harga').value = '';
       document.getElementById('input-gambar').value = '';
       document.getElementById('imgPreviewWrap').classList.remove('show');
+      document.getElementById('dropzoneContent').style.display = 'flex';
       document.getElementById('modeText').textContent = 'Mode: Tambah Baru';
       document.getElementById('modeDot').className = 'mode-dot';
       document.getElementById('btnLabel').textContent = 'Simpan Barang';
