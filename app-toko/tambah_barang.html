@@ -90,6 +90,66 @@
 
     .nav-divider { width: 1px; height: 22px; background: var(--border-lt); }
 
+    .nav-icon-btn {
+      position: relative;
+      width: 36px; height: 36px;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--bg2); border: 1.5px solid var(--border-lt);
+      border-radius: 50%; cursor: pointer; color: var(--ink);
+      transition: all 0.15s; flex-shrink: 0;
+    }
+
+    .nav-icon-btn:hover { border-color: var(--ink); background: var(--bg); }
+
+    .nav-icon-badge {
+      position: absolute; top: -5px; right: -5px;
+      min-width: 17px; height: 17px; padding: 0 4px;
+      background: var(--ink); color: var(--bg);
+      border-radius: 99px; display: none;
+      align-items: center; justify-content: center;
+      font-family: 'DM Mono', monospace; font-size: 9.5px; font-weight: 700;
+      border: 1.5px solid var(--bg);
+    }
+
+    .notif-menu-wrap { position: relative; }
+
+    .notif-dropdown {
+      display: none;
+      position: absolute; top: calc(100% + 10px); right: 0;
+      background: var(--bg); border: 1.5px solid var(--border-lt);
+      border-radius: 14px; min-width: 300px; max-width: 340px;
+      box-shadow: 0 12px 32px rgba(0,0,0,0.10); z-index: 150;
+      flex-direction: column;
+    }
+
+    .notif-menu-wrap.open .notif-dropdown { display: flex; }
+
+    .notif-dropdown-head {
+      padding: 14px 16px; border-bottom: 1px solid var(--border-lt);
+      font-size: 12.5px; font-weight: 700; letter-spacing: 0.3px;
+    }
+
+    .notif-list { max-height: 320px; overflow-y: auto; padding: 6px; }
+
+    .notif-empty { padding: 28px 16px; text-align: center; font-size: 12px; color: var(--ink4); }
+
+    .notif-item { display: flex; gap: 10px; padding: 10px 10px; border-radius: 10px; }
+    .notif-item.unread { background: var(--bg2); }
+
+    .notif-item-icon {
+      width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--ink); color: var(--bg);
+    }
+
+    .notif-item-body { flex: 1; min-width: 0; }
+
+    .notif-item-icon.hapus { background: var(--danger, #e53935); }
+    .notif-item-icon.tambah { background: var(--success, #2e7d32); }
+
+    .notif-item-msg { font-size: 12px; color: var(--ink2); line-height: 1.4; }
+    .notif-item-time { font-family: 'DM Mono', monospace; font-size: 9.5px; color: var(--ink4); margin-top: 3px; text-transform: uppercase; letter-spacing: 0.5px; }
+
     .btn-back {
       display: inline-flex;
       align-items: center;
@@ -767,6 +827,22 @@
 
       <div class="nav-divider"></div>
 
+      <div class="notif-menu-wrap" id="notifMenuWrap">
+        <button class="nav-icon-btn" onclick="toggleNotifDropdown(event)" aria-label="Notifikasi">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M5 8a5 5 0 0110 0c0 3 1 4.5 1.5 5.2a.6.6 0 01-.5 1H4a.6.6 0 01-.5-1C4 12.5 5 11 5 8z"/>
+            <path d="M8 16.5a2 2 0 004 0"/>
+          </svg>
+          <span class="nav-icon-badge" id="notifBadge">0</span>
+        </button>
+        <div class="notif-dropdown">
+          <div class="notif-dropdown-head">Aktivitas Barang</div>
+          <div class="notif-list" id="notifList"></div>
+        </div>
+      </div>
+
+      <div class="nav-divider"></div>
+
       <div class="user-menu-wrap" id="userMenuWrap">
         <div class="user-badge" id="userBadge" onclick="toggleUserDropdown(event)">
           <div class="user-badge-icon" id="userInitial">AD</div>
@@ -919,8 +995,9 @@
     <span id="toastMsg"></span>
   </div>
 
+  <script src="app.js"></script>
   <script>
-    const API = 'http://localhost:8080/platform/api-toko';
+    // API dideklarasikan di app.js
 
     // ── AUTH GUARD ──
     const myToken = localStorage.getItem('token_toko');
@@ -961,6 +1038,7 @@
 
     let allBarang = [];
     let hapusId = null;
+    let hapusNama = '';
     let modeEdit = false;
 
     function previewGambar(input) {
@@ -1148,7 +1226,11 @@
             body: dataEdit
           });
           const data = await res.json();
-          if (data.status === 'success') { showToast('Barang berhasil diperbarui!'); resetForm(); ambilData(); }
+          if (data.status === 'success') {
+            showToast('Barang berhasil diperbarui!');
+            pushNotif('Barang <strong>' + escapeHtmlNotif(nama) + '</strong> berhasil diedit.', 'edit');
+            resetForm(); ambilData();
+          }
           else showToast(data.pesan || 'Gagal.', 'error');
         } catch (e) { showToast('Error koneksi API', 'error'); }
       } else {
@@ -1167,6 +1249,7 @@
           hasil.className = 'result-msg show ' + (data.status === 'success' ? 'success' : 'error');
           if (data.status === 'success') {
             showToast('Barang berhasil ditambahkan!');
+            pushNotif('Barang <strong>' + escapeHtmlNotif(nama) + '</strong> berhasil ditambahkan.', 'tambah');
             resetForm();
             ambilData();
             setTimeout(() => hasil.className = 'result-msg', 3000);
@@ -1177,6 +1260,7 @@
 
     function bukaModal(id, nama) {
       hapusId = id;
+      hapusNama = nama;
       document.getElementById('modalNama').textContent = nama;
       document.getElementById('modalHapus').classList.add('open');
     }
@@ -1193,11 +1277,18 @@
         const data = await res.json();
         showToast(data.pesan, data.status === 'success' ? 'success' : 'error');
         if (data.status === 'success') {
+          pushNotif('Barang <strong>' + escapeHtmlNotif(hapusNama) + '</strong> berhasil dihapus.', 'hapus');
           tutupModal();
           if (String(document.getElementById('editId').value) === String(hapusId)) resetForm();
           ambilData();
         }
       } catch (e) { showToast('Error koneksi API', 'error'); }
+    }
+
+    function escapeHtmlNotif(str) {
+      return String(str)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     }
 
     document.getElementById('modalHapus').addEventListener('click', function (e) {

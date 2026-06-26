@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FinStore — Dashboard Statistik</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%230a0a0a%22/><text x=%2250%22 y=%2266%22 font-size=%2240%22 font-family=%22Arial,sans-serif%22 font-weight=%22900%22 fill=%22white%22 text-anchor=%22middle%22>FS</text></svg>">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #ffffff;
+      --bg2: #f5f5f5;
+      --bg3: #efefef;
+      --ink: #0a0a0a;
+      --ink2: #2a2a2a;
+      --ink3: #777777;
+      --ink4: #c8c8c8;
+      --border-lt: #e4e4e4;
+      --danger: #e53935;
+      --success: #2e7d32;
+    }
+
+    body {
+      background: var(--bg2);
+      color: var(--ink);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+    }
+
+    /* ── TOPNAV ── */
+    .topnav {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--bg);
+      border-bottom: 1.5px solid var(--border-lt);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 48px; height: 64px;
+    }
+
+    .brand {
+      display: inline-flex; flex-direction: column; gap: 4px;
+      text-decoration: none; line-height: 1;
+    }
+    .brand-text { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 3px; line-height: 1; }
+    .brand-text .fin { color: var(--ink); }
+    .brand-text .store { color: rgba(10,10,10,0.25); }
+    .brand-line { display: flex; gap: 3px; align-items: center; }
+    .brand-line-solid { height: 2px; width: 24px; background: var(--ink); border-radius: 99px; }
+    .brand-line-dot { width: 4px; height: 4px; background: rgba(10,10,10,0.2); border-radius: 50%; }
+    .brand-line-thin { height: 2px; width: 36px; background: rgba(10,10,10,0.08); border-radius: 99px; }
+
+    .nav-links { display: flex; align-items: center; gap: 8px; }
+    .nav-divider { width: 1px; height: 22px; background: var(--border-lt); }
+
+    .nav-icon-btn {
+      position: relative;
+      width: 36px; height: 36px;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--bg2); border: 1.5px solid var(--border-lt);
+      border-radius: 50%; cursor: pointer; color: var(--ink);
+      transition: all 0.15s; flex-shrink: 0;
+    }
+
+    .nav-icon-btn:hover { border-color: var(--ink); background: var(--bg); }
+
+    .nav-icon-badge {
+      position: absolute; top: -5px; right: -5px;
+      min-width: 17px; height: 17px; padding: 0 4px;
+      background: var(--ink); color: var(--bg);
+      border-radius: 99px; display: none;
+      align-items: center; justify-content: center;
+      font-family: 'DM Mono', monospace; font-size: 9.5px; font-weight: 700;
+      border: 1.5px solid var(--bg);
+    }
+
+    .notif-menu-wrap { position: relative; }
+
+    .notif-dropdown {
+      display: none;
+      position: absolute; top: calc(100% + 10px); right: 0;
+      background: var(--bg); border: 1.5px solid var(--border-lt);
+      border-radius: 14px; min-width: 300px; max-width: 340px;
+      box-shadow: 0 12px 32px rgba(0,0,0,0.10); z-index: 150;
+      flex-direction: column;
+    }
+
+    .notif-menu-wrap.open .notif-dropdown { display: flex; }
+
+    .notif-dropdown-head {
+      padding: 14px 16px; border-bottom: 1px solid var(--border-lt);
+      font-size: 12.5px; font-weight: 700; letter-spacing: 0.3px;
+    }
+
+    .notif-list { max-height: 320px; overflow-y: auto; padding: 6px; }
+
+    .notif-empty { padding: 28px 16px; text-align: center; font-size: 12px; color: var(--ink4); }
+
+    .notif-item { display: flex; gap: 10px; padding: 10px 10px; border-radius: 10px; }
+    .notif-item.unread { background: var(--bg2); }
+
+    .notif-item-icon {
+      width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--ink); color: var(--bg);
+    }
+
+    .notif-item-body { flex: 1; min-width: 0; }
+
+    .notif-item-icon.hapus { background: var(--danger, #e53935); }
+    .notif-item-icon.tambah { background: var(--success, #2e7d32); }
+
+    .notif-item-msg { font-size: 12px; color: var(--ink2); line-height: 1.4; }
+    .notif-item-time { font-family: 'DM Mono', monospace; font-size: 9.5px; color: var(--ink4); margin-top: 3px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    .btn-back {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 18px; font-size: 12px; font-weight: 600;
+      letter-spacing: 0.5px; text-transform: uppercase; text-decoration: none;
+      color: var(--ink3); border: 1.5px solid var(--border-lt);
+      border-radius: 99px; transition: all 0.15s; font-family: 'DM Sans', sans-serif;
+      background: transparent; cursor: pointer;
+    }
+    .btn-back:hover { color: var(--ink); border-color: var(--ink); }
+
+    .user-menu-wrap { position: relative; }
+    .user-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 12px 6px 6px; border: 1.5px solid var(--border-lt);
+      border-radius: 99px; background: var(--bg2); cursor: pointer;
+      transition: all 0.15s; user-select: none;
+    }
+    .user-badge:hover, .user-badge.open { border-color: var(--ink); background: var(--bg); }
+    .user-badge-icon {
+      width: 26px; height: 26px; background: var(--ink); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 700; color: #fff; flex-shrink: 0;
+    }
+    .user-badge-name { font-size: 12.5px; font-weight: 600; color: var(--ink2); font-family: 'DM Sans', sans-serif; }
+    .user-chevron { transition: transform 0.2s ease; color: var(--ink4); }
+    .user-badge.open .user-chevron { transform: rotate(180deg); }
+    .user-dropdown {
+      display: none; position: absolute; top: calc(100% + 10px); right: 0;
+      background: var(--bg); border: 1.5px solid var(--border-lt);
+      border-radius: 14px; padding: 6px; min-width: 180px;
+      box-shadow: 0 12px 32px rgba(0,0,0,0.10); z-index: 150; flex-direction: column; gap: 2px;
+    }
+    .user-menu-wrap.open .user-dropdown { display: flex; }
+    .user-info { padding: 10px 12px 12px; border-bottom: 1px solid var(--border-lt); margin-bottom: 4px; }
+    .user-info-name { font-size: 13px; font-weight: 700; color: var(--ink); font-family: 'DM Sans', sans-serif; }
+    .user-info-role { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 1.5px; color: var(--ink4); text-transform: uppercase; margin-top: 2px; }
+    .user-drop-item {
+      display: flex; align-items: center; gap: 8px; padding: 9px 12px;
+      font-size: 12.5px; font-weight: 500; font-family: 'DM Sans', sans-serif;
+      color: var(--ink3); background: transparent; border: none; border-radius: 8px;
+      cursor: pointer; text-align: left; transition: all 0.12s; width: 100%;
+    }
+    .user-drop-item:hover { background: var(--bg2); color: var(--ink); }
+    .user-drop-item.danger { color: var(--danger); }
+    .user-drop-item.danger:hover { background: #fff0f0; }
+
+    /* ── HERO ── */
+    .hero {
+      background: var(--ink);
+      padding: 48px 48px 44px;
+      display: flex; align-items: flex-end; justify-content: space-between;
+      gap: 24px; flex-wrap: wrap;
+      border-bottom: 1.5px solid var(--border-lt);
+    }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-family: 'DM Mono', monospace; font-size: 11px;
+      letter-spacing: 2px; text-transform: uppercase;
+      color: rgba(255,255,255,0.4); margin-bottom: 14px;
+    }
+    .hero-eyebrow::before { content: ''; display: block; width: 18px; height: 1.5px; background: rgba(255,255,255,0.2); }
+    .hero-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(44px, 6vw, 80px);
+      line-height: 0.88; letter-spacing: 2px; color: white;
+    }
+    .hero-title em { font-style: normal; -webkit-text-stroke: 2px white; color: transparent; }
+    .hero-sub { margin-top: 14px; font-size: 13px; color: rgba(255,255,255,0.45); line-height: 1.6; }
+
+    .hero-time {
+      font-family: 'DM Mono', monospace; font-size: 11px;
+      color: rgba(255,255,255,0.3); letter-spacing: 1px; text-align: right;
+    }
+    .hero-time-big { font-family: 'Bebas Neue', sans-serif; font-size: 36px; color: rgba(255,255,255,0.15); letter-spacing: 2px; line-height: 1; margin-top: 4px; }
+
+    /* ── BODY ── */
+    .body-wrap { padding: 32px 48px 64px; display: flex; flex-direction: column; gap: 24px; }
+
+    /* ── STAT CARDS ── */
+    .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+
+    .stat-card {
+      background: var(--bg); border: 1.5px solid var(--border-lt);
+      border-radius: 16px; padding: 22px 22px 18px;
+      display: flex; flex-direction: column; gap: 8px;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+    .stat-card:hover { box-shadow: 0 8px 28px rgba(0,0,0,0.08); transform: translateY(-2px); }
+
+    .stat-label {
+      font-family: 'DM Mono', monospace; font-size: 10px;
+      letter-spacing: 1.5px; text-transform: uppercase; color: var(--ink4);
+      display: flex; align-items: center; gap: 7px;
+    }
+    .stat-label svg { color: var(--ink3); }
+    .stat-value {
+      font-family: 'Bebas Neue', sans-serif; font-size: 34px;
+      letter-spacing: 0.5px; color: var(--ink); line-height: 1;
+    }
+    .stat-sub { font-size: 11.5px; color: var(--ink3); }
+
+    /* ── CHART CARDS ── */
+    .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .chart-grid-full { display: grid; grid-template-columns: 1fr; gap: 20px; }
+
+    .chart-card {
+      background: var(--bg); border: 1.5px solid var(--border-lt);
+      border-radius: 20px; padding: 28px 28px 22px;
+    }
+    .chart-header {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 22px;
+    }
+    .chart-title {
+      font-family: 'Bebas Neue', sans-serif; font-size: 20px;
+      letter-spacing: 1px; color: var(--ink);
+    }
+    .chart-badge {
+      margin-left: auto; font-family: 'DM Mono', monospace;
+      font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase;
+      color: var(--ink4); border: 1px solid var(--border-lt);
+      border-radius: 99px; padding: 3px 10px;
+    }
+
+    .btn-chart-type {
+      padding: 5px 12px; font-size: 10px; font-weight: 700;
+      font-family: 'DM Sans', sans-serif; letter-spacing: 0.5px;
+      text-transform: uppercase; border: 1.5px solid var(--border-lt);
+      border-radius: 99px; background: transparent; color: var(--ink3);
+      cursor: pointer; transition: all 0.15s;
+    }
+    .btn-chart-type:hover { border-color: var(--ink); color: var(--ink); }
+    .btn-chart-type.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+    .chart-wrap { position: relative; height: 300px; width: 100%; }
+    .chart-wrap-sm { position: relative; height: 260px; width: 100%; }
+
+    /* ── SECTION LABEL ── */
+    .section-label {
+      font-family: 'DM Mono', monospace; font-size: 10px;
+      letter-spacing: 2px; text-transform: uppercase; color: var(--ink4);
+      display: flex; align-items: center; gap: 12px;
+    }
+    .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border-lt); }
+
+    /* ── LOADING ── */
+    .loading-shimmer {
+      background: linear-gradient(90deg, var(--bg3) 25%, var(--bg2) 50%, var(--bg3) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+      border-radius: 8px;
+    }
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    @media (max-width: 960px) {
+      .stat-grid { grid-template-columns: repeat(2, 1fr); }
+      .chart-grid { grid-template-columns: 1fr; }
+      .body-wrap, .topnav, .hero { padding-left: 24px; padding-right: 24px; }
+    }
+    @media (max-width: 600px) {
+      .stat-grid { grid-template-columns: 1fr 1fr; }
+      .hero { padding: 32px 24px 28px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOPNAV -->
+  <nav class="topnav">
+    <a class="brand" href="index.html">
+      <span class="brand-text"><span class="fin">Fin</span><span class="store">Store</span></span>
+      <div class="brand-line">
+        <div class="brand-line-solid"></div>
+        <div class="brand-line-dot"></div>
+        <div class="brand-line-thin"></div>
+      </div>
+    </a>
+    <div class="nav-links">
+      <a class="btn-back" href="index.html">
+        <svg width="11" height="11" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M8 2L4 6.5 8 11"/>
+        </svg>
+        Kembali
+      </a>
+      <div class="nav-divider"></div>
+      <div class="notif-menu-wrap" id="notifMenuWrap">
+        <button class="nav-icon-btn" onclick="toggleNotifDropdown(event)" aria-label="Notifikasi">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M5 8a5 5 0 0110 0c0 3 1 4.5 1.5 5.2a.6.6 0 01-.5 1H4a.6.6 0 01-.5-1C4 12.5 5 11 5 8z"/>
+            <path d="M8 16.5a2 2 0 004 0"/>
+          </svg>
+          <span class="nav-icon-badge" id="notifBadge">0</span>
+        </button>
+        <div class="notif-dropdown">
+          <div class="notif-dropdown-head">Aktivitas Barang</div>
+          <div class="notif-list" id="notifList"></div>
+        </div>
+      </div>
+      <div class="nav-divider"></div>
+      <div class="user-menu-wrap" id="userMenuWrap">
+        <div class="user-badge" id="userBadge" onclick="toggleUserDropdown(event)">
+          <div class="user-badge-icon" id="userInitial">AD</div>
+          <span class="user-badge-name" id="userBadgeName">admin</span>
+          <svg class="user-chevron" width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M2 3.5l3 3 3-3"/>
+          </svg>
+        </div>
+        <div class="user-dropdown">
+          <div class="user-info">
+            <div class="user-info-name" id="dropdownUserName">admin</div>
+            <div class="user-info-role">Administrator</div>
+          </div>
+          <button class="user-drop-item danger" onclick="logout()">
+            <svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M5 1H2a1 1 0 00-1 1v10a1 1 0 001 1h3M9 10l3-3-3-3M12 7H4"/>
+            </svg>
+            Logout
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div>
+      <div class="hero-eyebrow">Analitik & Wawasan</div>
+      <div class="hero-title">DASHBOARD<br><em>STATISTIK</em></div>
+      <div class="hero-sub">Ringkasan data inventaris FinStore secara real-time</div>
+    </div>
+    <div>
+      <div class="hero-time" id="heroDate">—</div>
+      <div class="hero-time-big" id="heroTime">--:--</div>
+    </div>
+  </section>
+
+  <!-- BODY -->
+  <div class="body-wrap">
+
+    <!-- STAT CARDS -->
+    <div class="section-label">Ringkasan</div>
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-label">
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8">
+            <rect x="1" y="1" width="6" height="6" rx="1.5"/>
+            <rect x="9" y="1" width="6" height="6" rx="1.5"/>
+            <rect x="1" y="9" width="6" height="6" rx="1.5"/>
+            <rect x="9" y="9" width="6" height="6" rx="1.5"/>
+          </svg>
+          Total Barang
+        </div>
+        <div class="stat-value" id="statTotal">—</div>
+        <div class="stat-sub">item di inventaris</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M8 1v14M1 8h14"/>
+          </svg>
+          Rata-rata Harga
+        </div>
+        <div class="stat-value" id="statRata">—</div>
+        <div class="stat-sub">per barang</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M2 14l4-8 4 4 4-8"/>
+          </svg>
+          Harga Tertinggi
+        </div>
+        <div class="stat-value" id="statMaks">—</div>
+        <div class="stat-sub">barang termahal</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M2 6l4 8 4-4 4 8"/>
+          </svg>
+          Harga Terendah
+        </div>
+        <div class="stat-value" id="statMin">—</div>
+        <div class="stat-sub">barang termurah</div>
+      </div>
+    </div>
+
+    <!-- CHART ROW 1: Bar termahal + Pie -->
+    <div class="section-label">Grafik Termahal</div>
+    <div class="chart-grid">
+
+      <!-- Bar / Line chart termahal -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/>
+          </svg>
+          <span class="chart-title">Top 5 Termahal</span>
+          <div style="margin-left:auto; display:flex; gap:5px;">
+            <button onclick="gantiChart1('bar')"  class="btn-chart-type active" id="c1-bar">Bar</button>
+            <button onclick="gantiChart1('line')" class="btn-chart-type" id="c1-line">Line</button>
+          </div>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="chart1"></canvas>
+        </div>
+      </div>
+
+      <!-- Pie / Doughnut termahal -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 2a10 10 0 0 1 10 10H12V2z"/>
+          </svg>
+          <span class="chart-title">Proporsi Termahal</span>
+          <div style="margin-left:auto; display:flex; gap:5px;">
+            <button onclick="gantiChart2('pie')"      class="btn-chart-type active" id="c2-pie">Pie</button>
+            <button onclick="gantiChart2('doughnut')" class="btn-chart-type" id="c2-doughnut">Doughnut</button>
+          </div>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="chart2"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHART ROW 2: Termurah -->
+    <div class="section-label">Grafik Termurah</div>
+    <div class="chart-grid">
+
+      <!-- Bar termurah -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 20V14"/><path d="M12 20V10"/><path d="M6 20v-4"/>
+          </svg>
+          <span class="chart-title">Top 5 Termurah</span>
+          <div style="margin-left:auto; display:flex; gap:5px;">
+            <button onclick="gantiChart3('bar')"  class="btn-chart-type active" id="c3-bar">Bar</button>
+            <button onclick="gantiChart3('line')" class="btn-chart-type" id="c3-line">Line</button>
+          </div>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="chart3"></canvas>
+        </div>
+      </div>
+
+      <!-- Doughnut termurah -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <circle cx="12" cy="12" r="4"/>
+          </svg>
+          <span class="chart-title">Proporsi Termurah</span>
+          <div style="margin-left:auto; display:flex; gap:5px;">
+            <button onclick="gantiChart4('doughnut')" class="btn-chart-type active" id="c4-doughnut">Doughnut</button>
+            <button onclick="gantiChart4('pie')"      class="btn-chart-type" id="c4-pie">Pie</button>
+          </div>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="chart4"></canvas>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /body-wrap -->
+
+  <script src="app.js"></script>
+  <script>
+    // API dideklarasikan di app.js
+
+    // ── AUTH ──
+    const myToken = localStorage.getItem('token_toko');
+    if (!myToken) window.location.href = 'login.html';
+
+    const savedUser = localStorage.getItem('username_toko');
+    if (savedUser) {
+      document.querySelectorAll('#userBadgeName, #dropdownUserName').forEach(el => el.textContent = savedUser);
+      const initEl = document.getElementById('userInitial');
+      if (initEl) initEl.textContent = savedUser.substring(0, 2).toUpperCase();
+    }
+
+    function logout() {
+      localStorage.removeItem('token_toko');
+      localStorage.removeItem('username_toko');
+      window.location.href = 'login.html';
+    }
+
+    function toggleUserDropdown(e) {
+      e.stopPropagation();
+      document.getElementById('userMenuWrap').classList.toggle('open');
+      document.getElementById('userBadge').classList.toggle('open');
+    }
+    document.addEventListener('click', function(e) {
+      const wrap = document.getElementById('userMenuWrap');
+      const badge = document.getElementById('userBadge');
+      if (wrap && !wrap.contains(e.target)) {
+        wrap.classList.remove('open');
+        badge.classList.remove('open');
+      }
+    });
+
+    // ── CLOCK ──
+    function updateClock() {
+      const now = new Date();
+      document.getElementById('heroDate').textContent =
+        now.toLocaleDateString('id-ID', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+      document.getElementById('heroTime').textContent =
+        now.toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit' });
+    }
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    // ── FORMAT HARGA ──
+    function fmtHarga(val) {
+      if (val >= 1000000) return 'Rp ' + (val / 1000000).toFixed(1).replace('.0','') + ' jt';
+      if (val >= 1000)    return 'Rp ' + (val / 1000).toFixed(0) + ' rb';
+      return 'Rp ' + val;
+    }
+
+    function fmtFull(val) {
+      return 'Rp ' + Number(val).toLocaleString('id-ID');
+    }
+
+    // ── WARNA ──
+    const COLORS_DARK = [
+      'rgba(10,10,10,0.88)',
+      'rgba(70,70,70,0.80)',
+      'rgba(130,130,130,0.75)',
+      'rgba(50,50,50,0.82)',
+      'rgba(160,160,160,0.70)',
+    ];
+    const COLORS_MID = [
+      'rgba(10,10,10,0.75)',
+      'rgba(80,80,80,0.70)',
+      'rgba(150,150,150,0.70)',
+      'rgba(40,40,40,0.75)',
+      'rgba(180,180,180,0.65)',
+    ];
+
+    // ── CHART HELPERS ──
+    let chartInstances = {};
+
+    function buatChart(id, type, labels, values, colors) {
+      const ctx = document.getElementById(id);
+      if (!ctx) return;
+      if (chartInstances[id]) chartInstances[id].destroy();
+
+      const isPie = type === 'pie' || type === 'doughnut';
+
+      chartInstances[id] = new Chart(ctx, {
+        type: type,
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Harga (Rp)',
+            data: values,
+            backgroundColor: colors,
+            borderColor: isPie ? '#fff' : 'rgba(10,10,10,0.85)',
+            borderWidth: isPie ? 2 : 1,
+            borderRadius: type === 'bar' ? 8 : 0,
+            tension: 0.4,
+            fill: type === 'line',
+            pointBackgroundColor: 'var(--ink)',
+            pointRadius: type === 'line' ? 4 : 0,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: isPie,
+              position: 'right',
+              labels: {
+                font: { family: 'DM Sans', size: 11 },
+                boxWidth: 12, padding: 14,
+                color: '#0a0a0a'
+              }
+            },
+            tooltip: {
+              callbacks: {
+                label: function(ctx) {
+                  const val = ctx.parsed.y ?? ctx.parsed;
+                  return ' ' + fmtFull(val);
+                }
+              }
+            }
+          },
+          scales: (!isPie) ? {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: val => fmtHarga(val),
+                font: { family: 'DM Mono', size: 10 },
+                color: '#777'
+              },
+              grid: { color: 'rgba(0,0,0,0.04)' }
+            },
+            x: {
+              ticks: {
+                font: { family: 'DM Sans', size: 11 },
+                color: '#555',
+                maxRotation: 20,
+              },
+              grid: { display: false }
+            }
+          } : {}
+        }
+      });
+    }
+
+    // ── STATE TIPE CHART ──
+    let type1 = 'bar', type2 = 'pie', type3 = 'bar', type4 = 'doughnut';
+    let cachedData = null;
+
+    function setActive(prefix, type) {
+      document.querySelectorAll(`[id^="${prefix}-"]`).forEach(b => b.classList.remove('active'));
+      const btn = document.getElementById(`${prefix}-${type}`);
+      if (btn) btn.classList.add('active');
+    }
+
+    function gantiChart1(t) { type1 = t; setActive('c1', t); if (cachedData) renderCharts(cachedData); }
+    function gantiChart2(t) { type2 = t; setActive('c2', t); if (cachedData) renderCharts(cachedData); }
+    function gantiChart3(t) { type3 = t; setActive('c3', t); if (cachedData) renderCharts(cachedData); }
+    function gantiChart4(t) { type4 = t; setActive('c4', t); if (cachedData) renderCharts(cachedData); }
+
+    function renderCharts(json) {
+      const l1 = json.chart_data.labels;
+      const v1 = json.chart_data.values;
+      const l2 = json.chart_termurah.labels;
+      const v2 = json.chart_termurah.values;
+
+      buatChart('chart1', type1, l1, v1, COLORS_DARK);
+      buatChart('chart2', type2, l1, v1, COLORS_MID);
+      buatChart('chart3', type3, l2, v2, COLORS_DARK);
+      buatChart('chart4', type4, l2, v2, COLORS_MID);
+    }
+
+    // ── LOAD DATA ──
+    async function loadDashboard() {
+      try {
+        const res  = await fetch(API + '/statistik.php', { headers: { 'Authorization': myToken } });
+        const json = await res.json();
+
+        if (json.status === 'success') {
+          cachedData = json;
+
+          // Stat cards
+          document.getElementById('statTotal').textContent = json.ringkasan.total_barang + ' item';
+          document.getElementById('statRata').textContent  = fmtHarga(json.ringkasan.rata_harga);
+          document.getElementById('statMaks').textContent  = fmtHarga(json.ringkasan.harga_maks);
+          document.getElementById('statMin').textContent   = fmtHarga(json.ringkasan.harga_min);
+
+          renderCharts(json);
+        }
+      } catch (err) {
+        console.error('Gagal memuat dashboard:', err);
+      }
+    }
+
+    loadDashboard();
+  </script>
+</body>
+</html>
